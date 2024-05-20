@@ -48,8 +48,15 @@ public class Main {
         button2.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                Alugueis();
-                frame.dispose();
+
+                if(veiculos.isEmpty()){
+                    JOptionPane.showMessageDialog(new JFrame(), "Não existem veículos para alugar", "Erro",
+                            JOptionPane.ERROR_MESSAGE);
+                }else{
+                    Alugueis();
+                    frame.dispose();
+                }
+
             }
         });
 
