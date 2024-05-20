@@ -8,7 +8,7 @@ import java.awt.event.ActionListener;
 import java.time.Year;
 import java.util.*;
 
-public class Test {
+public class Main {
 
     static ArrayList<Veiculo> veiculos = new ArrayList<>();
     static ArrayList<Cliente> clientes = new ArrayList<>();
