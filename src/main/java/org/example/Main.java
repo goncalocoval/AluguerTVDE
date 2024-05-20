@@ -7,6 +7,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.time.Year;
 import java.util.*;
+import java.util.regex.Pattern;
 
 public class Main {
 
@@ -16,7 +17,7 @@ public class Main {
 
     // Interfaces gráficas
 
-    private static void Inicio(){
+    public static void Inicio(){
 
         JFrame frame = new JFrame("Aluguer de carros TVDE");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -63,7 +64,7 @@ public class Main {
 
     }
 
-    private static void Veiculos(){
+    public static void Veiculos(){
 
         JFrame frame = new JFrame("Veículos");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -159,7 +160,7 @@ public class Main {
 
     }
 
-    private static void Alugueis(){
+    public static void Alugueis(){
 
         JFrame frame = new JFrame("Alugueis");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -231,7 +232,7 @@ public class Main {
 
     // Veiculos CRUD
 
-    private static void VeiculoC() {
+    public static void VeiculoC() {
 
         JFrame frame = new JFrame("Registar veículo");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -329,14 +330,15 @@ public class Main {
         });
 
         confirmButton.addActionListener(e -> {
-            String marca = txtMarca.getText();
-            String modelo = txtModelo.getText();
-            String matricula = txtMatricula.getText();
+
+            String marca = txtMarca.getText().trim();
+            String modelo = txtModelo.getText().trim();
+            String matricula = txtMatricula.getText().toUpperCase();
             String anoS = txtAno.getText();
             String portasS = txtPortas.getText();
             String capacidadeS = txtCapacidade.getText();
             String velocidadeS = txtVelocidade.getText();
-            String combustivel = txtCombustivel.getText();
+            String combustivel = txtCombustivel.getText().trim();
             String precoS = txtPreco.getText();
             boolean documentos = chkDocumentos.isSelected();
             boolean chkOne = chkVOne.isSelected();
@@ -349,63 +351,68 @@ public class Main {
 
             } else {
 
-                String error = "Ano inválido";
+                if(VerifMatricula(matricula)){
 
-                try {
+                    String error = "Ano inválido";
 
-                    int ano = Integer.parseInt(anoS);
-                    if ((ano > Year.now().getValue()) || (Year.now().getValue() - ano) > 7) {
-                        Integer.parseInt("Error");
+                    try {
+
+                        int ano = Integer.parseInt(anoS);
+                        if ((ano > Year.now().getValue()) || (Year.now().getValue() - ano) > 7) {
+                            Integer.parseInt("Error");
+                        }
+
+                        error = "Número de portas inválido";
+                        int portas = Integer.parseInt(portasS);
+                        if (portas < 5 || portas > 10) {
+                            Integer.parseInt("Error");
+                        }
+
+                        error = "Capacidade inválida";
+                        int capacidade = Integer.parseInt(capacidadeS);
+                        if (capacidade < 1 || capacidade > 9) {
+                            Integer.parseInt("Error");
+                        }
+
+                        error = "Velocidade inválida";
+                        double velocidade = Double.parseDouble(velocidadeS);
+                        if (velocidade < 50 || velocidade > 500) {
+                            Integer.parseInt("Error");
+                        }
+
+                        error = "Preço inválido";
+                        double preco = Double.parseDouble(precoS);
+                        if (preco < 0) {
+                            Integer.parseInt("Error");
+                        }
+
+                        int categoria = comboCategorias.getSelectedIndex();
+
+                        Veiculo c = null;
+
+                        c = switch (categoria) {
+                            case 0 -> new CarroEconomico(marca, modelo, matricula, ano, portas, capacidade, velocidade, combustivel, documentos, preco, false, chkOne, chkTwo);
+                            case 1 -> new CarroXL(marca, modelo, matricula, ano, portas, capacidade, velocidade, combustivel, documentos, preco, false, chkOne, chkTwo);
+                            case 2 -> new CarroExecutivo(marca, modelo, matricula, ano, portas, capacidade, velocidade, combustivel, documentos, preco, false, chkOne, chkTwo);
+                            default -> new CarroAcessibilidade(marca, modelo, matricula, ano, portas, capacidade, velocidade, combustivel, documentos, preco, false, chkOne, chkTwo);
+                        };
+
+                        veiculos.add(c);
+
+                        JOptionPane.showMessageDialog(new JFrame(), "Veículo registado com sucesso", "Sucesso",
+                                JOptionPane.INFORMATION_MESSAGE);
+
+                        Veiculos();
+                        frame.dispose();
+
+                    } catch (Exception ex) {
+
+                        JOptionPane.showMessageDialog(new JFrame(), error, "Erro",
+                                JOptionPane.ERROR_MESSAGE);
                     }
 
-                    error = "Número de portas inválido";
-                    int portas = Integer.parseInt(portasS);
-                    if (portas < 5 || portas > 10) {
-                        Integer.parseInt("Error");
-                    }
-
-                    error = "Capacidade inválida";
-                    int capacidade = Integer.parseInt(capacidadeS);
-                    if (capacidade < 1 || capacidade > 9) {
-                        Integer.parseInt("Error");
-                    }
-
-                    error = "Velocidade inválida";
-                    double velocidade = Double.parseDouble(velocidadeS);
-                    if (velocidade < 50 || velocidade > 500) {
-                        Integer.parseInt("Error");
-                    }
-
-                    error = "Preço inválido";
-                    double preco = Double.parseDouble(precoS);
-                    if (preco < 0) {
-                        Integer.parseInt("Error");
-                    }
-
-                    int categoria = comboCategorias.getSelectedIndex();
-
-                    Veiculo c = null;
-
-                    c = switch (categoria) {
-                        case 0 -> new CarroEconomico(marca, modelo, matricula, ano, portas, capacidade, velocidade, combustivel, documentos, preco, false, chkOne, chkTwo);
-                        case 1 -> new CarroXL(marca, modelo, matricula, ano, portas, capacidade, velocidade, combustivel, documentos, preco, false, chkOne, chkTwo);
-                        case 2 -> new CarroExecutivo(marca, modelo, matricula, ano, portas, capacidade, velocidade, combustivel, documentos, preco, false, chkOne, chkTwo);
-                        default -> new CarroAcessibilidade(marca, modelo, matricula, ano, portas, capacidade, velocidade, combustivel, documentos, preco, false, chkOne, chkTwo);
-                    };
-
-                    veiculos.add(c);
-
-                    JOptionPane.showMessageDialog(new JFrame(), "Veículo registado com sucesso", "Sucesso",
-                            JOptionPane.INFORMATION_MESSAGE);
-
-                    Veiculos();
-                    frame.dispose();
-
-                } catch (Exception ex) {
-
-                    JOptionPane.showMessageDialog(new JFrame(), error, "Erro",
-                            JOptionPane.ERROR_MESSAGE);
                 }
+
             }
         });
 
@@ -421,7 +428,7 @@ public class Main {
 
     }
 
-    private static void VeiculoR(int i){
+    public static void VeiculoR(int i){
 
         JPanel panel = new JPanel(new GridLayout(0, 2, 10, 10));
         JLabel myLabel = new JLabel();
@@ -435,15 +442,55 @@ public class Main {
 
     // Alugueis CRUD
 
-    private static void AluguerC(){
-
+    public static void AluguerC(){
 
 
     }
 
     // Clientes CRUD
 
-    private static void ClienteC(){
+    public static void ClienteC(){
+
+    }
+
+    public static boolean VerifMatricula(String m){
+
+        boolean m1 = Pattern.matches("[0-9]{2}+-[A-Za-z]{2}+-[0-9]{2}",m);
+        boolean m2 = Pattern.matches("[A-Za-z]{2}+-[0-9]{2}+-[A-Za-z]{2}",m);
+
+        if(!m1 && !m2){
+
+            JOptionPane.showMessageDialog(new JFrame(), "Matrícula inválida (formato 00-AA-00 ou AA-00-AA)", "Erro",
+                    JOptionPane.ERROR_MESSAGE);
+
+            return false;
+
+        }else{
+
+            for(Veiculo v : veiculos){
+                if(v.getMatricula().equals(m)){
+
+                    JOptionPane.showMessageDialog(new JFrame(), "Matrícula já existe", "Erro",
+                            JOptionPane.ERROR_MESSAGE);
+
+                    return false;
+
+                }
+            }
+
+            return true;
+
+        }
+
+        // Tipos de matricula aceites: 00-AA-00 (2005-2020) || AA-00-AA (2020-atualmente)
+
+        // Regex 00-AA-00: [0-9]{2}+-[A-Za-z]{2}+-[0-9]{2} && [A-Za-z]{2}+-[0-9]{2}+-[A-Za-z]{2}
+
+        // Chamar quando utilizador insere a matricula ao registar um veiculo
+
+        // Verificar primeiro a estrutura da matricula
+
+        // Verificar se a matricula existe no array veiculos
 
     }
 
