@@ -37,4 +37,15 @@ public class CarroExecutivo extends Veiculo{
         this.massagem = massagem;
     }
 
+    @Override
+    public String print() {
+        return super.print() +
+
+                "<B>Categoria: </B> Carro executívo<br>" +
+                "<B>WiFi: </B>" + wifi + "<br>" +
+                "<B>Assentos com massagem: </B>"+ massagem + "<br>" +
+
+                "</html>";
+    }
+
 }

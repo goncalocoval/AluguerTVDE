@@ -36,4 +36,15 @@ public class CarroXL extends Veiculo{
     public void setTracao(boolean tracao) {
         this.tracao = tracao;
     }
+
+    @Override
+    public String print() {
+        return super.print() +
+
+                "<B>Categoria: </B> Carro XL<br>" +
+                "<B>Sensores de estacionamento: </B>" + estacionamento + "<br>" +
+                "<B>Tração às 4 rodas: </B>"+ tracao + "<br>" +
+
+                "</html>";
+    }
 }

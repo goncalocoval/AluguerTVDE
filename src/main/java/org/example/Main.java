@@ -1,10 +1,16 @@
 package org.example;
 
+import com.github.lgooddatepicker.components.DatePicker;
+
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.time.LocalDate;
+import java.time.Period;
 import java.time.Year;
 import java.util.*;
 import java.util.regex.Pattern;
@@ -14,6 +20,9 @@ public class Main {
     static ArrayList<Veiculo> veiculos = new ArrayList<>();
     static ArrayList<Cliente> clientes = new ArrayList<>();
     static ArrayList<Aluguer> alugueis = new ArrayList<>();
+
+    static int selectedVeiculo = 0;
+    static int selectedCliente = 0;
 
     // Interfaces gráficas
 
@@ -49,13 +58,8 @@ public class Main {
             @Override
             public void actionPerformed(ActionEvent e) {
 
-                if(veiculos.isEmpty()){
-                    JOptionPane.showMessageDialog(new JFrame(), "Não existem veículos para alugar", "Erro",
-                            JOptionPane.ERROR_MESSAGE);
-                }else{
-                    Alugueis();
-                    frame.dispose();
-                }
+                Alugueis();
+                frame.dispose();
 
             }
         });
@@ -185,7 +189,11 @@ public class Main {
         // JList scrollable
         DefaultListModel<String> listModel = new DefaultListModel<>();
         for(Aluguer a : alugueis){
-            listModel.addElement(a.toString());
+
+            if(!a.isTermidado()){
+                listModel.addElement(a.toString());
+            }
+
         }
 
         JList<String> alugieisList = new JList<>(listModel);
@@ -201,6 +209,38 @@ public class Main {
 
         JCheckBox verTodosCheckbox = new JCheckBox("Ver todos");
         buttonPanel.add(verTodosCheckbox);
+
+        verTodosCheckbox.addItemListener(new ItemListener() {
+
+            public void itemStateChanged(ItemEvent e) {
+
+                if(verTodosCheckbox.isSelected()){
+
+                    listModel.removeAllElements();
+
+                    for(Aluguer a : alugueis){
+                        listModel.addElement(a.toString());
+                    }
+
+                    alugieisList.setModel(listModel);
+
+                }else{
+
+                    listModel.removeAllElements();
+
+                    for(Aluguer a : alugueis){
+                        if(!a.isTermidado()){
+                            listModel.addElement(a.toString());
+                        }
+                    }
+
+                    alugieisList.setModel(listModel);
+
+                }
+            }
+
+        });
+
         JButton button1 = new JButton("Novo");
         JButton button2 = new JButton("Terminar");
         JButton button3 = new JButton("Voltar");
@@ -208,7 +248,8 @@ public class Main {
         button1.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-
+                VeiculoS();
+                frame.dispose();
             }
         });
 
@@ -447,16 +488,374 @@ public class Main {
 
     }
 
+    public static void VeiculoS(){
+
+        JFrame frame = new JFrame("Selecionar veículo");
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setSize(600, 400);
+        frame.setResizable(false); // torna o frame não redimensionável
+        frame.setLayout(new BorderLayout());
+        frame.setLocationRelativeTo(null); // centraliza o frame na tela
+
+        // Título "Veículos"
+        JLabel titleLabel = new JLabel("Veículo a alugar");
+        titleLabel.setFont(new Font("Arial", Font.BOLD, 20)); // Define o estilo do título
+        titleLabel.setBorder(new EmptyBorder(10, 10, 0, 0)); // Espaçamento externo
+        frame.add(titleLabel, BorderLayout.NORTH);
+
+        // JList scrollable
+        DefaultListModel<String> listModel = new DefaultListModel<>();
+        for(Veiculo v : veiculos){
+
+            if(!v.isAlugado()){
+                listModel.addElement(v.toString());
+            }
+
+        }
+
+        JList<String> veiculosList = new JList<>(listModel);
+        veiculosList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        JScrollPane scrollPane = new JScrollPane(veiculosList);
+        scrollPane.setBorder(new EmptyBorder(0, 10, 0, 0)); // Espaçamento externo
+        frame.add(scrollPane, BorderLayout.CENTER);
+
+        // Botões à direita
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.setLayout(new GridLayout(2, 1, 0, 10));
+        buttonPanel.setBorder(new EmptyBorder(10, 10, 10, 10)); // Espaçamento externo
+
+
+        JButton button1 = new JButton("Selecionar");
+        JButton button2 = new JButton("Voltar");
+
+        button1.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                selectedVeiculo = veiculosList.getSelectedIndex();
+                ClienteS();
+                frame.dispose();
+            }
+        });
+
+        button2.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                Alugueis();
+                frame.dispose();
+            }
+        });
+
+        buttonPanel.add(button1);
+        buttonPanel.add(button2);
+
+        frame.add(buttonPanel, BorderLayout.EAST);
+
+        frame.setVisible(true);
+
+    }
+
     // Alugueis CRUD
 
     public static void AluguerC(){
 
+        JFrame frame = new JFrame("Aluguer");
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setSize(600, 670);
+        frame.setLayout(new BorderLayout());
+        frame.setLocationRelativeTo(null); // Centralizar o frame na tela
+
+        // Título "Veículos"
+        JLabel titleLabel = new JLabel("Detalhes do aluguer");
+        titleLabel.setFont(new Font("Arial", Font.BOLD, 20)); // Define o estilo do título
+        titleLabel.setBorder(new EmptyBorder(10, 10, 0, 0)); // Espaçamento externo
+        frame.add(titleLabel, BorderLayout.NORTH);
+
+        JPanel panel = new JPanel(new GridLayout(0, 1, 10, 10));
+        panel.setBorder(new EmptyBorder(10, 10, 10, 10)); // Espaçamento externo
+
+        panel.add(new JLabel("<html><B>Veículo: </B><br><br>" +
+                "<B>Marca: </B>" + veiculos.get(selectedVeiculo).getMarca() + "<br>" +
+                "<B>Modelo: </B>" + veiculos.get(selectedVeiculo).getModelo() + "<br>" +
+                "<B>Matrícula: </B>" + veiculos.get(selectedVeiculo).getMatricula() + "<br>" + "</html>"
+
+        ));
+
+        JButton veiculoButton = new JButton("Ver detalhes");
+
+        panel.add(veiculoButton);
+
+        panel.add(new JLabel("<html><B>Cliente: </B><br><br>" +
+                "<B>Nome completo: </B>" + clientes.get(selectedCliente).getNome() + "<br>" +
+                "<B>NIF: </B>" + clientes.get(selectedCliente).getNif() + "<br>" +
+                "<B>Telemóvel: </B>" + clientes.get(selectedCliente).getTelemovel() + "<br>" + "</html>"
+
+        ));
+
+        JButton clienteButton = new JButton("Ver detalhes");
+
+        panel.add(clienteButton);
+
+        panel.add(new JLabel("Número do aluguer: " + (alugueis.size()+1)));
+
+        panel.add(new JLabel("Data de início do aluguer: " + LocalDate.now()));
+
+        JButton confirmButton = new JButton("Confirmar");
+        JButton cancelButton = new JButton("Cancelar");
+
+        veiculoButton.addActionListener(e -> {
+            VeiculoR(selectedVeiculo);
+        });
+
+        clienteButton.addActionListener(e -> {
+            ClienteR(selectedCliente);
+        });
+
+        cancelButton.addActionListener(e -> {
+            int reply = JOptionPane.showConfirmDialog(new JFrame(), "Deseja cancelar este aluguer?", "Confirmação",
+                    JOptionPane.YES_NO_OPTION);
+
+            if (reply == JOptionPane.YES_OPTION) {
+                Alugueis();
+                frame.dispose();
+            }
+
+        });
+
+        confirmButton.addActionListener(e -> {
+
+        });
+
+        JPanel buttonPanel = new JPanel(new GridLayout(1, 2, 10, 10)); // 1 linha, 2 colunas
+        buttonPanel.setBorder(new EmptyBorder(10, 10, 10, 10)); // Espaçamento externo
+        buttonPanel.add(confirmButton);
+        buttonPanel.add(cancelButton);
+
+        frame.add(panel, BorderLayout.CENTER);
+        frame.add(buttonPanel, BorderLayout.SOUTH);
+
+        frame.setVisible(true);
 
     }
 
     // Clientes CRUD
 
     public static void ClienteC(){
+
+        JFrame frame = new JFrame("Novo cliente");
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setSize(600, 500);
+        frame.setLayout(new BorderLayout());
+        frame.setLocationRelativeTo(null); // Centralizar o frame na tela
+
+        JPanel panel = new JPanel(new GridLayout(0, 2, 10, 10));
+        panel.setBorder(new EmptyBorder(10, 10, 10, 10)); // Espaçamento externo
+
+        panel.add(new JLabel("Nome completo:"));
+        JTextField txtNome = new JTextField("");
+        panel.add(txtNome);
+
+        panel.add(new JLabel("Data de nascimento:"));
+        DatePicker dataNasc = new DatePicker();
+        panel.add(dataNasc);
+
+        panel.add(new JLabel("NIF:"));
+        JTextField txtNIF = new JTextField("");
+        panel.add(txtNIF);
+
+        panel.add(new JLabel("Email:"));
+        JTextField txtEmail = new JTextField("");
+        panel.add(txtEmail);
+
+        panel.add(new JLabel("Telemóvel:"));
+        JTextField txtTelemovel = new JTextField("");
+        panel.add(txtTelemovel);
+
+        panel.add(new JLabel("Número da carta de condução:"));
+        JTextField txtCarta = new JTextField("");
+        panel.add(txtCarta);
+
+        panel.add(new JLabel("Validade da carta de condução:"));
+        DatePicker dataCarta = new DatePicker();
+        panel.add(dataCarta);
+
+        JButton confirmButton = new JButton("Confirmar");
+        JButton cancelButton = new JButton("Voltar");
+
+        cancelButton.addActionListener(e -> {
+            ClienteS();
+            frame.dispose();
+        });
+
+        confirmButton.addActionListener(e -> {
+
+            String nome = txtNome.getText().trim();
+            LocalDate dateNasc = dataNasc.getDate();
+            String nif = txtNIF.getText().trim();
+            String email = txtEmail.getText().trim();
+            String telemovel = txtTelemovel.getText().trim();
+            String carta = txtCarta.getText().trim();
+            LocalDate dateCarta = dataCarta.getDate();
+
+            if (nome.isEmpty() || dateNasc == null || nif.isEmpty() || email.isEmpty() || telemovel.isEmpty() || carta.isEmpty() || dateCarta == null) {
+
+                JOptionPane.showMessageDialog(new JFrame(), "Não podem existir campos vazios", "Erro",
+                        JOptionPane.ERROR_MESSAGE);
+
+            } else {
+
+                String error = "Data de nascimento inválida";
+
+                try {
+
+                    Period period = Period.between(dateNasc, LocalDate.now());
+                    if (!(period.getYears() >= 18 &&  period.getYears() <= 67)) {
+                        Integer.parseInt("Error");
+                    }
+
+                    error = "NIF inválido";
+
+                    if (!validaNif(nif)) {
+                        Integer.parseInt("Error");
+                    }
+
+                    error = "Email inválido";
+
+                    if (!validaEmail(email)) {
+                        Integer.parseInt("Error");
+                    }
+
+                    error = "Telemóvel inválido";
+
+                    if (!validaTele(telemovel)) {
+                        Integer.parseInt("Error");
+                    }
+
+                    error = "Validade da carta de condução inválida";
+
+                    if ((!dateCarta.isAfter(LocalDate.now()))) {
+                        Integer.parseInt("Error");
+                    }
+
+                    Cliente c = new Cliente(nome, dateNasc, Integer.parseInt(nif), email, Integer.parseInt(telemovel), new CartaConducao(carta, dateCarta));
+
+                    clientes.add(c);
+
+                    JOptionPane.showMessageDialog(new JFrame(), "Cliente registado com sucesso", "Sucesso",
+                            JOptionPane.INFORMATION_MESSAGE);
+
+                    int reply = JOptionPane.showConfirmDialog(new JFrame(), "Deseja selecionar este cliente?", "Sucesso",
+                            JOptionPane.YES_NO_OPTION);
+
+                    if (reply == JOptionPane.YES_OPTION) {
+                        selectedCliente = clientes.size()-1;
+                        AluguerC();
+                        frame.dispose();
+                    } else {
+                        ClienteS();
+                        frame.dispose();
+                    }
+
+                } catch (Exception ex) {
+
+                    JOptionPane.showMessageDialog(new JFrame(), error, "Erro",
+                            JOptionPane.ERROR_MESSAGE);
+                }
+
+            }
+        });
+
+        JPanel buttonPanel = new JPanel(new GridLayout(1, 2, 10, 10)); // 1 linha, 2 colunas
+        buttonPanel.setBorder(new EmptyBorder(10, 10, 10, 10)); // Espaçamento externo
+        buttonPanel.add(confirmButton);
+        buttonPanel.add(cancelButton);
+
+        frame.add(panel, BorderLayout.CENTER);
+        frame.add(buttonPanel, BorderLayout.SOUTH);
+
+        frame.setVisible(true);
+
+    }
+
+    public static void ClienteR(int i){
+        JPanel panel = new JPanel(new GridLayout(0, 2, 10, 10));
+        JLabel myLabel = new JLabel();
+        myLabel.setText(clientes.get(i).print());
+        panel.add(myLabel);
+
+        JOptionPane.showConfirmDialog(null, panel, "Detalhes do cliente",
+                JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE);
+    }
+
+    public static void ClienteS(){
+
+        JFrame frame = new JFrame("Selecionar cliente");
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setSize(600, 400);
+        frame.setResizable(false); // torna o frame não redimensionável
+        frame.setLayout(new BorderLayout());
+        frame.setLocationRelativeTo(null); // centraliza o frame na tela
+
+        JLabel titleLabel = new JLabel("Cliente");
+        titleLabel.setFont(new Font("Arial", Font.BOLD, 20)); // Define o estilo do título
+        titleLabel.setBorder(new EmptyBorder(10, 10, 0, 0)); // Espaçamento externo
+        frame.add(titleLabel, BorderLayout.NORTH);
+
+        // JList scrollable
+        DefaultListModel<String> listModel = new DefaultListModel<>();
+        for(Cliente c : clientes){
+
+            listModel.addElement(c.toString());
+
+        }
+
+        JList<String> clientesList = new JList<>(listModel);
+        clientesList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        JScrollPane scrollPane = new JScrollPane(clientesList);
+        scrollPane.setBorder(new EmptyBorder(0, 10, 0, 0)); // Espaçamento externo
+        frame.add(scrollPane, BorderLayout.CENTER);
+
+        // Botões à direita
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.setLayout(new GridLayout(3, 1, 0, 10));
+        buttonPanel.setBorder(new EmptyBorder(10, 10, 10, 10)); // Espaçamento externo
+
+
+        JButton button1 = new JButton("Selecionar");
+        JButton button2 = new JButton("Novo");
+        JButton button3 = new JButton("Voltar");
+
+        button1.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                selectedCliente = clientesList.getSelectedIndex();
+                AluguerC();
+                frame.dispose();
+            }
+        });
+
+        button2.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                ClienteC();
+                frame.dispose();
+            }
+        });
+
+        button3.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                VeiculoS();
+                frame.dispose();
+            }
+        });
+
+        buttonPanel.add(button1);
+        buttonPanel.add(button2);
+        buttonPanel.add(button3);
+
+        frame.add(buttonPanel, BorderLayout.EAST);
+
+        frame.setVisible(true);
 
     }
 
@@ -498,6 +897,51 @@ public class Main {
         // Verificar primeiro a estrutura da matricula
 
         // Verificar se a matricula existe no array veiculos
+
+    }
+
+    public static boolean validaNif(String nif){
+
+        /*
+        As regras para a validação do NIF são:
+
+        Tem de ter 9 dígitos;
+        O primeiro dígito tem de ser 1, 2, 5, 6, 8 ou 9; (Esta é a informação que circula na maior parte dos fóruns da internet, mas a realidade é que o 3 está reservado para uso de particulares assim que os começados por 2 se esgotarem e o 4 e 7 são utilizados em casos especiais, pelo que, por omissão, a nossa função ignora esta validação)
+        O dígito de controlo (último digíto do NIF) é obtido da seguinte forma:
+        9*d1 + 8*d2 + 7*d3 + 6*d4 + 5*d5 + 4*d6 + 3*d7 + 2*d8 + 1*d9  (em que d1 a d9 são os 9 dígitos do NIF);
+        Esta soma tem de ser múltiplo de 11 (quando divídida por 11 dar 0);
+        Subtraír o resto da divisão da soma por 11 a 11;
+        Se o resultado for 10, é assumído o algarismo 0;
+        [in webdados]
+        */
+
+        try{
+            final int max=9;
+            if (!nif.matches("[0-9]+") || nif.length()!=max) return false;
+            int checkSum=0;
+            //calcula a soma de controlo
+            for (int i=0; i<max-1; i++){
+                checkSum+=(nif.charAt(i)-'0')*(max-i);
+            }
+            int checkDigit=11-(checkSum % 11);
+            if (checkDigit>=10) checkDigit=0;
+            return checkDigit==nif.charAt(max-1)-'0';
+        }catch (Exception e) {
+            return false;
+        }
+        finally
+        {
+        }
+
+    }
+
+    public static boolean validaEmail(String email){
+        return Pattern.matches("^[A-Za-z0-9+_.-]+@(.+)$", email);
+    }
+
+    public static boolean validaTele(String telemovel){
+
+        return Pattern.matches("9[1236][0-9]{7}", telemovel);
 
     }
 

@@ -180,9 +180,7 @@ public class Veiculo {
                 "<B>Combustível: </B>" + combustivel + "<br>" +
                 "<B>Documentos em ordem: </B>"+ documentos + "<br>" +
                 "<B>Preço por dia (€): </B>" + preco + "<br>" +
-                "<B>Alugado: </B>"+ alugado + "<br>" +
-
-                "</html>";
+                "<B>Alugado: </B>"+ alugado + "<br>";
     }
 
 }

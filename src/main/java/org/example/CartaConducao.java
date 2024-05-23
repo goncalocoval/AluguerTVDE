@@ -1,17 +1,17 @@
 package org.example;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 public class CartaConducao {
 
-    protected int numero;
-    protected Date validade;
+    protected String numero;
+    protected LocalDate validade;
 
     public CartaConducao(){
-        this(0, new Date());
+        this("", LocalDate.now());
     }
 
-    public CartaConducao(int numero, Date validade) {
+    public CartaConducao(String numero, LocalDate validade) {
         this.numero = numero;
         this.validade = validade;
     }
@@ -20,20 +20,27 @@ public class CartaConducao {
         this(c.getNumero(), c.getValidade());
     }
 
-    public int getNumero() {
+    public String getNumero() {
         return numero;
     }
 
-    public void setNumero(int numero) {
+    public void setNumero(String numero) {
         this.numero = numero;
     }
 
-    public Date getValidade() {
+    public LocalDate getValidade() {
         return validade;
     }
 
-    public void setValidade(Date validade) {
+    public void setValidade(LocalDate validade) {
         this.validade = validade;
+    }
+
+    public String print(){
+
+        return "<B>Número da carta de condução: </B>" + numero + "<br>" +
+                "<B>Validade da carta de condução: </B>"+ validade + "<br>";
+
     }
 
 }

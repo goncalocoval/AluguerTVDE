@@ -41,8 +41,7 @@ public class CarroEconomico extends Veiculo{
     public String print() {
         return super.print() +
 
-                "<html>" +
-
+                "<B>Categoria: </B> Carro económico<br>" +
                 "<B>Bluetooth: </B>" + bluetooth + "<br>" +
                 "<B>Sistema de navegação: </B>"+ gps + "<br>" +
 

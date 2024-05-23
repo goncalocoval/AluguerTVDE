@@ -37,4 +37,15 @@ public class CarroAcessibilidade extends Veiculo{
         this.rampa = rampa;
     }
 
+    @Override
+    public String print() {
+        return super.print() +
+
+                "<B>Categoria: </B> Carro acessibilidade<br>" +
+                "<B>Porta automática: </B>" + auto + "<br>" +
+                "<B>Rampa para cadeira de rodas: </B>"+ rampa + "<br>" +
+
+                "</html>";
+    }
+
 }

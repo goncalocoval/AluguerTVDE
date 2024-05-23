@@ -1,35 +1,31 @@
 package org.example;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 public class Aluguer implements Pagar{
 
     protected int num; // Número do aluguer
     protected Veiculo v; // Veículo alugado
     protected Cliente c; // Cliente que alugou
-    protected Date inicio; // Data do início do aluguer
-    protected Date fim; // Data do fim do aluguer
-    protected int dias; // Dias submetidos ao aluguer
-    protected boolean atraso; // Atraso no aluguer
+    protected LocalDate inicio; // Data do início do aluguer
+    protected LocalDate fim; // Data do fim do aluguer
     protected boolean termidado; // Aluguer terminado
 
     public Aluguer() {
-        this(0, new Veiculo(), new Cliente(), new Date(), new Date(), 0, false, false);
+        this(0, new Veiculo(), new Cliente(), LocalDate.now());
     }
 
-    public Aluguer(int num, Veiculo v, Cliente c, Date inicio, Date fim, int dias, boolean atraso, boolean termidado) {
+    public Aluguer(int num, Veiculo v, Cliente c, LocalDate inicio) {
         this.num = num;
         this.v = v;
         this.c = c;
         this.inicio = inicio;
-        this.fim = fim;
-        this.dias = dias;
-        this.atraso = atraso;
-        this.termidado = termidado;
+        this.fim = null;
+        this.termidado = false;
     }
 
     public Aluguer(Aluguer a){
-        this(a.getNum(), a.getV(), a.getC(), a.getInicio(), a.getFim(), a.getDias(), a.isAtraso(), a.isTermidado());
+        this(a.getNum(), a.getV(), a.getC(), a.getInicio());
     }
 
     public int getNum() {
@@ -56,36 +52,20 @@ public class Aluguer implements Pagar{
         this.c = c;
     }
 
-    public Date getInicio() {
+    public LocalDate getInicio() {
         return inicio;
     }
 
-    public void setInicio(Date inicio) {
+    public void setInicio(LocalDate inicio) {
         this.inicio = inicio;
     }
 
-    public Date getFim() {
+    public LocalDate getFim() {
         return fim;
     }
 
-    public void setFim(Date fim) {
+    public void setFim(LocalDate fim) {
         this.fim = fim;
-    }
-
-    public int getDias() {
-        return dias;
-    }
-
-    public void setDias(int dias) {
-        this.dias = dias;
-    }
-
-    public boolean isAtraso() {
-        return atraso;
-    }
-
-    public void setAtraso(boolean atraso) {
-        this.atraso = atraso;
     }
 
     public boolean isTermidado() {
@@ -98,7 +78,7 @@ public class Aluguer implements Pagar{
 
     @Override
     public double PrecoTotal() {
-        return this.v.preco * this.dias;
+        return 0;
     }
 
     @Override

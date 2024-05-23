@@ -1,31 +1,31 @@
 package org.example;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 public class Cliente {
 
     protected String nome;
-    protected Date data;
+    protected LocalDate data;
     protected int nif;
     protected String email;
-    protected int telefone;
+    protected int telemovel;
     protected CartaConducao carta;
 
     public Cliente(){
-        this("", new Date(), 0, "", 0, new CartaConducao());
+        this("", LocalDate.now(), 0, "", 0, new CartaConducao());
     }
 
-    public Cliente(String nome, Date data, int nif, String email, int telefone, CartaConducao carta) {
+    public Cliente(String nome, LocalDate data, int nif, String email, int telemovel, CartaConducao carta) {
         this.nome = nome;
         this.data = data;
         this.nif = nif;
         this.email = email;
-        this.telefone = telefone;
+        this.telemovel = telemovel;
         this.carta = carta;
     }
 
     public Cliente(Cliente c){
-        this(c.getNome(), c.getData(), c.getNif(), c.getEmail(), c.getTelefone(), c.getCarta());
+        this(c.getNome(), c.getData(), c.getNif(), c.getEmail(), c.getTelemovel(), c.getCarta());
     }
 
     public String getNome() {
@@ -36,11 +36,11 @@ public class Cliente {
         this.nome = nome;
     }
 
-    public Date getData() {
+    public LocalDate getData() {
         return data;
     }
 
-    public void setData(Date data) {
+    public void setData(LocalDate data) {
         this.data = data;
     }
 
@@ -60,12 +60,12 @@ public class Cliente {
         this.email = email;
     }
 
-    public int getTelefone() {
-        return telefone;
+    public int getTelemovel() {
+        return telemovel;
     }
 
-    public void setTelefone(int telefone) {
-        this.telefone = telefone;
+    public void setTelemovel(int telemovel) {
+        this.telemovel = telemovel;
     }
 
     public CartaConducao getCarta() {
@@ -76,4 +76,38 @@ public class Cliente {
         this.carta = carta;
     }
 
+    // Métodos 'Override'
+
+
+    @Override
+    public String toString() {
+        return super.toString();
+    }
+
+    @Override
+    protected Object clone() throws CloneNotSupportedException {
+        return super.clone();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return super.equals(obj);
+    }
+
+    // Método 'print'
+
+    // Método print()
+
+    public String print(){
+        return "<html>" +
+
+                "<B>Nome completo: </B>" + nome + "<br>" +
+                "<B>Data de nascimento: </B>"+ data + "<br>" +
+                "<B>NIF: </B>" + nif + "<br>" +
+                "<B>Email: </B>"+ email + "<br>" +
+                "<B>Telemóvel: </B>" + telemovel + "<br>" +
+                carta.print() +
+
+                "</html>";
+    }
 }
