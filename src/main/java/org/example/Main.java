@@ -139,7 +139,14 @@ public class Main {
             @Override
             public void actionPerformed(ActionEvent e) {
 
-                frame.dispose();
+                if(vehicleList.getSelectedIndex() == -1){
+                    JOptionPane.showMessageDialog(new JFrame(), "Nenhum veículo selecionado!", "Erro",
+                            JOptionPane.ERROR_MESSAGE);
+                }else{
+                    VeiculoU(vehicleList.getSelectedIndex());
+                    frame.dispose();
+                }
+
             }
         });
 
@@ -147,7 +154,14 @@ public class Main {
             @Override
             public void actionPerformed(ActionEvent e) {
 
-                frame.dispose();
+                if(vehicleList.getSelectedIndex() == -1){
+                    JOptionPane.showMessageDialog(new JFrame(), "Nenhum veículo selecionado!", "Erro",
+                            JOptionPane.ERROR_MESSAGE);
+                }else{
+                    VeiculoD(vehicleList.getSelectedIndex());
+                    frame.dispose();
+                }
+
             }
         });
 
@@ -188,17 +202,20 @@ public class Main {
 
         // JList scrollable
         DefaultListModel<String> listModel = new DefaultListModel<>();
+        ArrayList<Integer> alugueisPositions = new ArrayList();
+
         for(Aluguer a : alugueis){
 
             if(!a.isTermidado()){
                 listModel.addElement(a.toString());
+                alugueisPositions.add(a.getNum());
             }
 
         }
 
-        JList<String> alugieisList = new JList<>(listModel);
-        alugieisList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        JScrollPane scrollPane = new JScrollPane(alugieisList);
+        JList<String> alugueisList = new JList<>(listModel);
+        alugueisList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        JScrollPane scrollPane = new JScrollPane(alugueisList);
         scrollPane.setBorder(new EmptyBorder(0, 10, 0, 0)); // Espaçamento externo
         frame.add(scrollPane, BorderLayout.CENTER);
 
@@ -214,48 +231,70 @@ public class Main {
 
             public void itemStateChanged(ItemEvent e) {
 
-                if(verTodosCheckbox.isSelected()){
+                listModel.removeAllElements();
+                alugueisPositions.removeAll(alugueisPositions);
 
-                    listModel.removeAllElements();
+                if(verTodosCheckbox.isSelected()){
 
                     for(Aluguer a : alugueis){
                         listModel.addElement(a.toString());
+                        alugueisPositions.add(a.getNum());
                     }
 
-                    alugieisList.setModel(listModel);
-
                 }else{
-
-                    listModel.removeAllElements();
 
                     for(Aluguer a : alugueis){
                         if(!a.isTermidado()){
                             listModel.addElement(a.toString());
+                            alugueisPositions.add(a.getNum());
                         }
                     }
 
-                    alugieisList.setModel(listModel);
-
                 }
+
+                alugueisList.setModel(listModel);
+
             }
 
         });
 
         JButton button1 = new JButton("Novo");
-        JButton button2 = new JButton("Terminar");
+        JButton button2 = new JButton("Detalhes");
         JButton button3 = new JButton("Voltar");
 
         button1.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                VeiculoS();
-                frame.dispose();
+
+                boolean flag = false;
+                for(Veiculo v : veiculos){
+                    if(!v.isAlugado()){
+                        flag = true;
+                        break;
+                    }
+                }
+                if(flag){
+                    VeiculoS();
+                    frame.dispose();
+                }
+                else {
+                    JOptionPane.showMessageDialog(new JFrame(), "Não existem veículos disponíveis para alugar!", "Erro",
+                            JOptionPane.ERROR_MESSAGE);
+                }
+
             }
         });
 
         button2.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                if(alugueisList.getSelectedIndex() == -1){
+                    JOptionPane.showMessageDialog(new JFrame(), "Nenhum aluguer selecionado!", "Erro",
+                            JOptionPane.ERROR_MESSAGE);
+                }else{
+                    AluguerR(alugueisPositions.get(alugueisList.getSelectedIndex()));
+                    frame.dispose();
+                }
 
             }
         });
@@ -488,6 +527,238 @@ public class Main {
 
     }
 
+    public static void VeiculoU(int i){
+
+        JFrame frame = new JFrame("Editar veículo");
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setSize(400, 500);
+        frame.setLayout(new BorderLayout());
+        frame.setLocationRelativeTo(null); // Centralizar o frame na tela
+
+        JPanel panel = new JPanel(new GridLayout(0, 2, 10, 10));
+        panel.setBorder(new EmptyBorder(10, 10, 10, 10)); // Espaçamento externo
+
+        panel.add(new JLabel("Categoria:"));
+        String[] categorias = {"Económico", "XL", "Executivo", "Acessibilidade"};
+        JComboBox<String> comboCategorias = new JComboBox<>(categorias);
+
+        if(veiculos.get(i) instanceof CarroEconomico){
+            comboCategorias.setSelectedIndex(0);
+        } else if (veiculos.get(i) instanceof CarroXL){
+            comboCategorias.setSelectedIndex(1);
+        } else if (veiculos.get(i) instanceof CarroExecutivo){
+            comboCategorias.setSelectedIndex(2);
+        } else if (veiculos.get(i) instanceof CarroAcessibilidade){
+            comboCategorias.setSelectedIndex(3);
+        }
+        panel.add(comboCategorias);
+
+        panel.add(new JLabel("Marca:"));
+        JTextField txtMarca = new JTextField(veiculos.get(i).getMarca());
+        panel.add(txtMarca);
+
+        panel.add(new JLabel("Modelo:"));
+        JTextField txtModelo = new JTextField(veiculos.get(i).getModelo());
+        panel.add(txtModelo);
+
+        panel.add(new JLabel("Matrícula:"));
+        JTextField txtMatricula = new JTextField(veiculos.get(i).getMatricula());
+        panel.add(txtMatricula);
+
+        panel.add(new JLabel("Ano:"));
+        JTextField txtAno = new JTextField(String.valueOf(veiculos.get(i).getAno()));
+        panel.add(txtAno);
+
+        panel.add(new JLabel("Portas:"));
+        JTextField txtPortas = new JTextField(String.valueOf(veiculos.get(i).getPortas()));
+        panel.add(txtPortas);
+
+        panel.add(new JLabel("Capacidade:"));
+        JTextField txtCapacidade = new JTextField(String.valueOf(veiculos.get(i).getCapacidade()));
+        panel.add(txtCapacidade);
+
+        panel.add(new JLabel("Velocidade máxima:"));
+        JTextField txtVelocidade = new JTextField(String.valueOf(veiculos.get(i).getVelocidade()));
+        panel.add(txtVelocidade);
+
+        panel.add(new JLabel("Combustível:"));
+        JTextField txtCombustivel = new JTextField(veiculos.get(i).getCombustivel());
+        panel.add(txtCombustivel);
+
+        panel.add(new JLabel("Preço por dia (€):"));
+        JTextField txtPreco = new JTextField(String.valueOf(veiculos.get(i).getPreco()));
+        panel.add(txtPreco);
+
+        JCheckBox chkDocumentos = new JCheckBox("Documentos em ordem");
+        chkDocumentos.setSelected(veiculos.get(i).isDocumentos());
+        panel.add(chkDocumentos);
+
+        panel.add(new JLabel(""));
+
+        JCheckBox chkVOne = new JCheckBox("Bluetooth");
+        JCheckBox chkVTwo = new JCheckBox("Sistema de navegação");
+        panel.add(chkVOne);
+        panel.add(chkVTwo);
+
+        comboCategorias.addActionListener((ActionEvent e) -> {
+            switch (comboCategorias.getSelectedIndex()) {
+
+                case 0 -> {
+                    chkVOne.setText("Bluetooth");
+                    chkVTwo.setText("Sistema de navegação");
+                }
+
+                case 1 -> {
+                    chkVOne.setText("Sensores de estacionamento");
+                    chkVTwo.setText("Tração às 4 rodas");
+                }
+
+                case 2 -> {
+                    chkVOne.setText("WiFi");
+                    chkVTwo.setText("Assentos com massagem");
+                }
+
+                default -> {
+                    chkVOne.setText("Porta automática");
+                    chkVTwo.setText("Rampa para cadeira de rodas");
+                }
+
+            }
+        });
+
+        JButton confirmButton = new JButton("Editar");
+        JButton cancelButton = new JButton("Cancelar");
+
+        cancelButton.addActionListener(e -> {
+            Veiculos();
+            frame.dispose();
+        });
+
+        confirmButton.addActionListener(e -> {
+
+            String marca = txtMarca.getText().trim();
+            String modelo = txtModelo.getText().trim();
+            String matricula = txtMatricula.getText().toUpperCase();
+            String anoS = txtAno.getText();
+            String portasS = txtPortas.getText();
+            String capacidadeS = txtCapacidade.getText();
+            String velocidadeS = txtVelocidade.getText();
+            String combustivel = txtCombustivel.getText().trim();
+            String precoS = txtPreco.getText();
+            boolean documentos = chkDocumentos.isSelected();
+            boolean chkOne = chkVOne.isSelected();
+            boolean chkTwo = chkVTwo.isSelected();
+
+            if (marca.isEmpty() || modelo.isEmpty() || matricula.isEmpty() || anoS.isEmpty() || portasS.isEmpty() || capacidadeS.isEmpty() || velocidadeS.isEmpty() || combustivel.isEmpty() || precoS.isEmpty()) {
+
+                JOptionPane.showMessageDialog(new JFrame(), "Não podem existir campos vazios", "Erro",
+                        JOptionPane.ERROR_MESSAGE);
+
+            } else {
+
+                boolean flag = true;
+                if(!veiculos.get(i).getMatricula().equals(matricula)){
+                    flag = VerifMatricula(matricula);
+                }
+
+                if(flag){
+
+                    String error = "Ano inválido";
+
+                    try {
+
+                        int ano = Integer.parseInt(anoS);
+                        if ((ano > Year.now().getValue()) || (Year.now().getValue() - ano) > 7) {
+                            Integer.parseInt("Error");
+                        }
+
+                        error = "Número de portas inválido";
+                        int portas = Integer.parseInt(portasS);
+                        if (portas < 5 || portas > 10) {
+                            Integer.parseInt("Error");
+                        }
+
+                        error = "Capacidade inválida";
+                        int capacidade = Integer.parseInt(capacidadeS);
+                        if (capacidade < 1 || capacidade > 9) {
+                            Integer.parseInt("Error");
+                        }
+
+                        error = "Velocidade inválida";
+                        double velocidade = Double.parseDouble(velocidadeS);
+                        if (velocidade < 50 || velocidade > 500) {
+                            Integer.parseInt("Error");
+                        }
+
+                        error = "Preço inválido";
+                        double preco = Double.parseDouble(precoS);
+                        if (preco < 0) {
+                            Integer.parseInt("Error");
+                        }
+
+                        int categoria = comboCategorias.getSelectedIndex();
+
+                        Veiculo c = null;
+
+                        c = switch (categoria) {
+                            case 0 -> new CarroEconomico(marca, modelo, matricula, ano, portas, capacidade, velocidade, combustivel, documentos, preco, false, chkOne, chkTwo);
+                            case 1 -> new CarroXL(marca, modelo, matricula, ano, portas, capacidade, velocidade, combustivel, documentos, preco, false, chkOne, chkTwo);
+                            case 2 -> new CarroExecutivo(marca, modelo, matricula, ano, portas, capacidade, velocidade, combustivel, documentos, preco, false, chkOne, chkTwo);
+                            default -> new CarroAcessibilidade(marca, modelo, matricula, ano, portas, capacidade, velocidade, combustivel, documentos, preco, false, chkOne, chkTwo);
+                        };
+
+                        veiculos.set(i, c);
+
+                        JOptionPane.showMessageDialog(new JFrame(), "Veículo editado com sucesso", "Sucesso",
+                                JOptionPane.INFORMATION_MESSAGE);
+
+                        Veiculos();
+                        frame.dispose();
+
+                    } catch (Exception ex) {
+
+                        JOptionPane.showMessageDialog(new JFrame(), error, "Erro",
+                                JOptionPane.ERROR_MESSAGE);
+                    }
+
+                }
+
+            }
+        });
+
+        JPanel buttonPanel = new JPanel(new GridLayout(1, 2, 10, 10)); // 1 linha, 2 colunas
+        buttonPanel.setBorder(new EmptyBorder(10, 10, 10, 10)); // Espaçamento externo
+        buttonPanel.add(confirmButton);
+        buttonPanel.add(cancelButton);
+
+        frame.add(panel, BorderLayout.CENTER);
+        frame.add(buttonPanel, BorderLayout.SOUTH);
+
+        frame.setVisible(true);
+
+    }
+
+    public static void VeiculoD(int i){
+
+        if(veiculos.get(i).isAlugado()){
+            JOptionPane.showMessageDialog(new JFrame(), "Não é possível remover um veículo alugado", "Erro",
+                    JOptionPane.ERROR_MESSAGE);
+        }else{
+
+            int reply = JOptionPane.showConfirmDialog(new JFrame(), "Deseja remover este veículo?", "Confirmação",
+                    JOptionPane.YES_NO_OPTION);
+
+            if (reply == JOptionPane.YES_OPTION) {
+                veiculos.remove(i);
+                JOptionPane.showMessageDialog(new JFrame(), "Veículo removido com sucesso", "Sucesso",
+                        JOptionPane.INFORMATION_MESSAGE);
+                Veiculos();
+            }
+
+        }
+
+    }
+
     public static void VeiculoS(){
 
         JFrame frame = new JFrame("Selecionar veículo");
@@ -622,7 +893,94 @@ public class Main {
         });
 
         confirmButton.addActionListener(e -> {
+            Aluguer a = new Aluguer((alugueis.size()+1), veiculos.get(selectedVeiculo), clientes.get(selectedCliente), LocalDate.now());
+            alugueis.add(a);
+            JOptionPane.showMessageDialog(new JFrame(), "Aluguer realizado com sucesso", "Sucesso",
+                    JOptionPane.INFORMATION_MESSAGE);
+            Alugueis();
+            frame.dispose();
+        });
 
+        JPanel buttonPanel = new JPanel(new GridLayout(1, 2, 10, 10)); // 1 linha, 2 colunas
+        buttonPanel.setBorder(new EmptyBorder(10, 10, 10, 10)); // Espaçamento externo
+        buttonPanel.add(confirmButton);
+        buttonPanel.add(cancelButton);
+
+        frame.add(panel, BorderLayout.CENTER);
+        frame.add(buttonPanel, BorderLayout.SOUTH);
+
+        frame.setVisible(true);
+
+    }
+
+    public static void AluguerR(int i){
+
+        JFrame frame = new JFrame("Aluguer");
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setSize(600, 670);
+        frame.setLayout(new BorderLayout());
+        frame.setLocationRelativeTo(null); // Centralizar o frame na tela
+
+        // Título "Veículos"
+        JLabel titleLabel = new JLabel("Detalhes do aluguer");
+        titleLabel.setFont(new Font("Arial", Font.BOLD, 20)); // Define o estilo do título
+        titleLabel.setBorder(new EmptyBorder(10, 10, 0, 0)); // Espaçamento externo
+        frame.add(titleLabel, BorderLayout.NORTH);
+
+        JPanel panel = new JPanel(new GridLayout(0, 1, 10, 10));
+        panel.setBorder(new EmptyBorder(10, 10, 10, 10)); // Espaçamento externo
+
+        panel.add(new JLabel("<html><B>Veículo: </B><br><br>" +
+                "<B>Marca: </B>" + alugueis.get(i).getV().getMarca() + "<br>" +
+                "<B>Modelo: </B>" + alugueis.get(i).getV().getModelo() + "<br>" +
+                "<B>Matrícula: </B>" + alugueis.get(i).getV().getMatricula() + "<br>" + "</html>"
+
+        ));
+
+        JButton veiculoButton = new JButton("Ver detalhes");
+
+        panel.add(veiculoButton);
+
+        panel.add(new JLabel("<html><B>Cliente: </B><br><br>" +
+                "<B>Nome completo: </B>" + alugueis.get(i).getC().getNome() + "<br>" +
+                "<B>NIF: </B>" + alugueis.get(i).getC().getNif() + "<br>" +
+                "<B>Telemóvel: </B>" + alugueis.get(i).getC().getTelemovel() + "<br>" + "</html>"
+
+        ));
+
+        JButton clienteButton = new JButton("Ver detalhes");
+
+        panel.add(clienteButton);
+
+        panel.add(new JLabel("Número do aluguer: " + (i)));
+
+        panel.add(new JLabel("Data de início do aluguer: " + alugueis.get(i).getInicio()));
+
+        JButton confirmButton = new JButton("Terminar");
+        JButton cancelButton = new JButton("Voltar");
+
+        veiculoButton.addActionListener(e -> {
+            VeiculoR(selectedVeiculo);
+        });
+
+        clienteButton.addActionListener(e -> {
+            ClienteR(selectedCliente);
+        });
+
+        cancelButton.addActionListener(e -> {
+            Alugueis();
+            frame.dispose();
+        });
+
+        confirmButton.addActionListener(e -> {
+            int reply = JOptionPane.showConfirmDialog(new JFrame(), "Deseja terminar este aluguer?", "Confirmação",
+                    JOptionPane.YES_NO_OPTION);
+
+            if (reply == JOptionPane.YES_OPTION) {
+                alugueis.get(i).setTermidado(true);
+                Alugueis();
+                frame.dispose();
+            }
         });
 
         JPanel buttonPanel = new JPanel(new GridLayout(1, 2, 10, 10)); // 1 linha, 2 colunas
