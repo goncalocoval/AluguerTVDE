@@ -2,6 +2,8 @@ package org.example;
 
 import java.time.LocalDate;
 
+import static java.time.temporal.ChronoUnit.DAYS;
+
 public class Aluguer implements Pagar{
 
     protected int num; // Número do aluguer
@@ -76,9 +78,29 @@ public class Aluguer implements Pagar{
         this.termidado = termidado;
     }
 
+    // Override methods
+
+    @Override
+    public String toString() {
+        return num + " | " + v.getMarca() + " " + v.getModelo() + " " + v.getAno() + " | " + c.getNome() + " - " + c.getNif() + " | " + inicio;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return super.equals(obj);
+    }
+
+    @Override
+    protected Object clone() throws CloneNotSupportedException {
+        return super.clone();
+    }
+
     @Override
     public double PrecoTotal() {
-        return 0;
+
+        long dias = DAYS.between(inicio, fim);
+        return dias * v.getPreco();
+
     }
 
     @Override
