@@ -476,8 +476,8 @@ public class Main {
 
         confirmButton.addActionListener(e -> {
 
-            String marca = txtMarca.getText().trim();
-            String modelo = txtModelo.getText().trim();
+            String marca = txtMarca.getText().trim().toUpperCase();
+            String modelo = txtModelo.getText().trim().toUpperCase();
             String matricula = txtMatricula.getText().toUpperCase();
             String anoS = txtAno.getText();
             String portasS = txtPortas.getText();
@@ -694,8 +694,8 @@ public class Main {
 
         confirmButton.addActionListener(e -> {
 
-            String marca = txtMarca.getText().trim();
-            String modelo = txtModelo.getText().trim();
+            String marca = txtMarca.getText().trim().toUpperCase();
+            String modelo = txtModelo.getText().trim().toUpperCase();
             String matricula = txtMatricula.getText().toUpperCase();
             String anoS = txtAno.getText();
             String portasS = txtPortas.getText();
@@ -1034,7 +1034,7 @@ public class Main {
     }
 
     public static void AluguerR(int i){
-        System.out.println(i + " | " + selectedCliente + " | " +selectedVeiculo);
+
         JFrame frame = new JFrame("Aluguer");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(600, 670);
@@ -1183,7 +1183,7 @@ public class Main {
             String nif = txtNIF.getText().trim();
             String email = txtEmail.getText().trim();
             String telemovel = txtTelemovel.getText().trim();
-            String carta = txtCarta.getText().trim();
+            String carta = txtCarta.getText().trim().toUpperCase();
             LocalDate dateCarta = dataCarta.getDate();
 
             if (nome.isEmpty() || dateNasc == null || nif.isEmpty() || email.isEmpty() || telemovel.isEmpty() || carta.isEmpty() || dateCarta == null) {
@@ -1217,6 +1217,12 @@ public class Main {
                     error = "Telemóvel inválido";
 
                     if (!validaTele(telemovel)) {
+                        Integer.parseInt("Error");
+                    }
+
+                    error = "Carta já existente noutro cliente";
+
+                    if (!validaCarta(carta)) {
                         Integer.parseInt("Error");
                     }
 
@@ -1425,6 +1431,15 @@ public class Main {
         */
 
         try{
+
+            for(Cliente c : clientes){
+                if(c.getNif() == Integer.parseInt(nif)){
+                    JOptionPane.showMessageDialog(new JFrame(), "NIF já existe", "Erro",
+                            JOptionPane.ERROR_MESSAGE);
+                    return false;
+                }
+            }
+
             final int max=9;
             if (!nif.matches("[0-9]+") || nif.length()!=max) return false;
             int checkSum=0;
@@ -1446,6 +1461,15 @@ public class Main {
 
     public static boolean validaEmail(String email){
         return Pattern.matches("^[A-Za-z0-9+_.-]+@(.+)$", email);
+    }
+
+    public static boolean validaCarta(String carta){
+        for(Cliente c : clientes){
+            if(c.getCarta().getNumero().equals(carta)){
+                return false;
+            }
+        }
+        return true;
     }
 
     public static boolean validaTele(String telemovel){
