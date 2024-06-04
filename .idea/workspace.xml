@@ -7,13 +7,7 @@
     <list default="true" id="9e83aef4-ed57-40b6-827e-09563cf68af9" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/org/example/Aluguer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/Aluguer.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/CarroAcessibilidade.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/CarroAcessibilidade.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/CarroEconomico.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/CarroEconomico.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/CarroExecutivo.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/CarroExecutivo.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/CarroXL.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/CarroXL.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/Cliente.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/Cliente.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/org/example/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/Main.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/Veiculo.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/Veiculo.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

@@ -6,6 +6,8 @@ import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.*;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.Period;
 import java.time.Year;
@@ -520,6 +522,8 @@ public class Main {
 
                         error = "Preço inválido!";
                         double preco = Double.parseDouble(precoS);
+                        BigDecimal precoBD = new BigDecimal(preco).setScale(2, RoundingMode.HALF_UP);
+                        preco = precoBD.doubleValue();
                         if (preco < 0) {
                             Integer.parseInt("Error");
                         }
@@ -780,6 +784,8 @@ public class Main {
 
                             error = "Preço inválido!";
                             double preco = Double.parseDouble(precoS);
+                            BigDecimal precoBD = new BigDecimal(preco).setScale(2, RoundingMode.HALF_UP);
+                            preco = precoBD.doubleValue();
                             if (preco < 0) {
                                 Integer.parseInt("Error");
                             }
@@ -843,8 +849,9 @@ public class Main {
                 veiculos.remove(i);
                 JOptionPane.showMessageDialog(new JFrame(), "Veículo removido com sucesso!", "Sucesso",
                         JOptionPane.INFORMATION_MESSAGE);
-                Veiculos();
             }
+
+            Veiculos();
 
         }
 

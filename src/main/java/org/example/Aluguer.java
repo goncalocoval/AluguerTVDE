@@ -1,5 +1,7 @@
 package org.example;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 
 import static java.time.temporal.ChronoUnit.DAYS;
@@ -99,7 +101,10 @@ public class Aluguer implements Pagar{
     public double PrecoTotal() {
 
         long dias = DAYS.between(inicio, fim) + 1;
-        return dias * v.getPreco();
+        double precototal = dias * v.getPreco();
+        BigDecimal precoBD = new BigDecimal(precototal).setScale(2, RoundingMode.HALF_UP);
+        precototal = precoBD.doubleValue();
+        return precototal;
 
     }
 
