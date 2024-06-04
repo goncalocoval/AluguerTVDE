@@ -5,10 +5,7 @@ import com.github.lgooddatepicker.components.DatePicker;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
+import java.awt.event.*;
 import java.time.LocalDate;
 import java.time.Period;
 import java.time.Year;
@@ -39,6 +36,11 @@ public class Main {
         titleLabel.setFont(new Font("Arial", Font.BOLD, 20)); // define o estilo do título
         titleLabel.setBorder(new EmptyBorder(20, 0, 0, 0)); // padding top: 20px
         frame.add(titleLabel, BorderLayout.NORTH);
+
+        JLabel descricaoLabel = new JLabel("por Gonçalo Coval e Gonçalo Silva", SwingConstants.CENTER);
+        descricaoLabel.setFont(new Font("Arial", Font.ITALIC, 12)); // define o estilo do título
+        descricaoLabel.setBorder(new EmptyBorder(0, 0, 20, 0)); // padding bottom: 20px
+        frame.add(descricaoLabel, BorderLayout.CENTER);
 
         JPanel buttonPanel = new JPanel();
         buttonPanel.setLayout(new FlowLayout());
@@ -109,15 +111,6 @@ public class Main {
         buttonPanel.setLayout(new GridLayout(6, 1, 0, 10)); // 6 linhas, 1 coluna
         buttonPanel.setBorder(new EmptyBorder(10, 10, 10, 10)); // Espaçamento externo
 
-        /*
-        // Combobox para ordenar por mais recentes ou mais antigos
-        String[] ordenar = {"Mais antigos", "Mais recentes"};
-        buttonPanel.add(new JLabel("Ordenar por:"));
-        JComboBox<String> comboOrdenar = new JComboBox<>(ordenar);
-        comboOrdenar.setSelectedIndex(0);
-        buttonPanel.add(comboOrdenar);
-         */
-
         // Combobox para filtrar categorias
         String[] categorias = {"Todos", "Económico", "XL", "Executivo", "Acessibilidade"};
         //buttonPanel.add(new JLabel("Categoria:"));
@@ -186,7 +179,7 @@ public class Main {
                     JOptionPane.showMessageDialog(new JFrame(), "Nenhum veículo selecionado!", "Erro",
                             JOptionPane.ERROR_MESSAGE);
                 }else{
-                    VeiculoR(getVeiculoIndex(veiculosPositions.get(vehicleList.getSelectedIndex())));
+                    VeiculoR(veiculos.get(getVeiculoIndex(veiculosPositions.get(vehicleList.getSelectedIndex()))));
                 }
 
             }
@@ -273,7 +266,7 @@ public class Main {
         JList<String> alugueisList = new JList<>(listModel);
         alugueisList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         JScrollPane scrollPane = new JScrollPane(alugueisList);
-        scrollPane.setBorder(new EmptyBorder(0, 10, 0, 0)); // Espaçamento externo
+        scrollPane.setBorder(new EmptyBorder(5, 10, 5, 10)); // Espaçamento externo
         frame.add(scrollPane, BorderLayout.CENTER);
 
         // Botões à direita
@@ -325,7 +318,7 @@ public class Main {
 
                 boolean flag = false;
                 for(Veiculo v : veiculos){
-                    if(!v.isAlugado()){
+                    if(!v.isAlugado() && v.isDocumentos()){
                         flag = true;
                         break;
                     }
@@ -418,13 +411,13 @@ public class Main {
         JTextField txtCapacidade = new JTextField("");
         panel.add(txtCapacidade);
 
-        panel.add(new JLabel("Velocidade máxima:"));
+        panel.add(new JLabel("Velocidade máxima (km/h):"));
         JTextField txtVelocidade = new JTextField("");
         panel.add(txtVelocidade);
 
         panel.add(new JLabel("Combustível:"));
-        JTextField txtCombustivel = new JTextField("");
-        panel.add(txtCombustivel);
+        JComboBox<String> comboCombustivel = new JComboBox<>(new String[]{"Gasolina", "Diesel", "Elétrico", "Híbrido"});
+        panel.add(comboCombustivel);
 
         panel.add(new JLabel("Preço por dia (€):"));
         JTextField txtPreco = new JTextField("");
@@ -483,22 +476,22 @@ public class Main {
             String portasS = txtPortas.getText();
             String capacidadeS = txtCapacidade.getText();
             String velocidadeS = txtVelocidade.getText();
-            String combustivel = txtCombustivel.getText().trim();
+            String combustivel = comboCombustivel.getSelectedItem().toString();
             String precoS = txtPreco.getText();
             boolean documentos = chkDocumentos.isSelected();
             boolean chkOne = chkVOne.isSelected();
             boolean chkTwo = chkVTwo.isSelected();
 
-            if (marca.isEmpty() || modelo.isEmpty() || matricula.isEmpty() || anoS.isEmpty() || portasS.isEmpty() || capacidadeS.isEmpty() || velocidadeS.isEmpty() || combustivel.isEmpty() || precoS.isEmpty()) {
+            if (marca.isEmpty() || modelo.isEmpty() || matricula.isEmpty() || anoS.isEmpty() || portasS.isEmpty() || capacidadeS.isEmpty() || velocidadeS.isEmpty() || precoS.isEmpty()) {
 
-                JOptionPane.showMessageDialog(new JFrame(), "Não podem existir campos vazios", "Erro",
+                JOptionPane.showMessageDialog(new JFrame(), "Não podem existir campos vazios!", "Erro",
                         JOptionPane.ERROR_MESSAGE);
 
             } else {
 
                 if(VerifMatricula(matricula)){
 
-                    String error = "Ano inválido";
+                    String error = "Ano inválido (veículo não pode ter mais de 7 anos)!";
 
                     try {
 
@@ -507,25 +500,25 @@ public class Main {
                             Integer.parseInt("Error");
                         }
 
-                        error = "Número de portas inválido";
+                        error = "Número de portas inválido (tem de ter entre 5 a 8 portas)!";
                         int portas = Integer.parseInt(portasS);
-                        if (portas < 5 || portas > 10) {
+                        if (portas < 5 || portas > 8) {
                             Integer.parseInt("Error");
                         }
 
-                        error = "Capacidade inválida";
+                        error = "Capacidade inválida (tem de ser entre 2 a 9 lugares)!";
                         int capacidade = Integer.parseInt(capacidadeS);
-                        if (capacidade < 1 || capacidade > 9) {
+                        if (capacidade < 2 || capacidade > 9) {
                             Integer.parseInt("Error");
                         }
 
-                        error = "Velocidade inválida";
+                        error = "Velocidade inválida (tem de ser entre 80 e 500 km/h)!";
                         double velocidade = Double.parseDouble(velocidadeS);
-                        if (velocidade < 50 || velocidade > 500) {
+                        if (velocidade < 80 || velocidade > 500) {
                             Integer.parseInt("Error");
                         }
 
-                        error = "Preço inválido";
+                        error = "Preço inválido!";
                         double preco = Double.parseDouble(precoS);
                         if (preco < 0) {
                             Integer.parseInt("Error");
@@ -544,7 +537,7 @@ public class Main {
 
                         veiculos.add(c);
 
-                        JOptionPane.showMessageDialog(new JFrame(), "Veículo registado com sucesso", "Sucesso",
+                        JOptionPane.showMessageDialog(new JFrame(), "Veículo registado com sucesso!", "Sucesso",
                                 JOptionPane.INFORMATION_MESSAGE);
 
                         Veiculos();
@@ -573,11 +566,11 @@ public class Main {
 
     }
 
-    public static void VeiculoR(int i){
+    public static void VeiculoR(Veiculo v){
 
         JPanel panel = new JPanel(new GridLayout(0, 2, 10, 10));
         JLabel myLabel = new JLabel();
-        myLabel.setText(veiculos.get(i).print());
+        myLabel.setText(v.print());
         panel.add(myLabel);
 
         JOptionPane.showConfirmDialog(null, panel, "Detalhes do veículo",
@@ -587,219 +580,258 @@ public class Main {
 
     public static void VeiculoU(int i){
 
-        JFrame frame = new JFrame("Editar veículo");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(400, 500);
-        frame.setLayout(new BorderLayout());
-        frame.setLocationRelativeTo(null); // Centralizar o frame na tela
-
-        JPanel panel = new JPanel(new GridLayout(0, 2, 10, 10));
-        panel.setBorder(new EmptyBorder(10, 10, 10, 10)); // Espaçamento externo
-
-        panel.add(new JLabel("Categoria:"));
-        String[] categorias = {"Económico", "XL", "Executivo", "Acessibilidade"};
-        JComboBox<String> comboCategorias = new JComboBox<>(categorias);
-
-        if(veiculos.get(i) instanceof CarroEconomico){
-            comboCategorias.setSelectedIndex(0);
-        } else if (veiculos.get(i) instanceof CarroXL){
-            comboCategorias.setSelectedIndex(1);
-        } else if (veiculos.get(i) instanceof CarroExecutivo){
-            comboCategorias.setSelectedIndex(2);
-        } else if (veiculos.get(i) instanceof CarroAcessibilidade){
-            comboCategorias.setSelectedIndex(3);
-        }
-        panel.add(comboCategorias);
-
-        panel.add(new JLabel("Marca:"));
-        JTextField txtMarca = new JTextField(veiculos.get(i).getMarca());
-        panel.add(txtMarca);
-
-        panel.add(new JLabel("Modelo:"));
-        JTextField txtModelo = new JTextField(veiculos.get(i).getModelo());
-        panel.add(txtModelo);
-
-        panel.add(new JLabel("Matrícula:"));
-        JTextField txtMatricula = new JTextField(veiculos.get(i).getMatricula());
-        panel.add(txtMatricula);
-
-        panel.add(new JLabel("Ano:"));
-        JTextField txtAno = new JTextField(String.valueOf(veiculos.get(i).getAno()));
-        panel.add(txtAno);
-
-        panel.add(new JLabel("Portas:"));
-        JTextField txtPortas = new JTextField(String.valueOf(veiculos.get(i).getPortas()));
-        panel.add(txtPortas);
-
-        panel.add(new JLabel("Capacidade:"));
-        JTextField txtCapacidade = new JTextField(String.valueOf(veiculos.get(i).getCapacidade()));
-        panel.add(txtCapacidade);
-
-        panel.add(new JLabel("Velocidade máxima:"));
-        JTextField txtVelocidade = new JTextField(String.valueOf(veiculos.get(i).getVelocidade()));
-        panel.add(txtVelocidade);
-
-        panel.add(new JLabel("Combustível:"));
-        JTextField txtCombustivel = new JTextField(veiculos.get(i).getCombustivel());
-        panel.add(txtCombustivel);
-
-        panel.add(new JLabel("Preço por dia (€):"));
-        JTextField txtPreco = new JTextField(String.valueOf(veiculos.get(i).getPreco()));
-        panel.add(txtPreco);
-
-        JCheckBox chkDocumentos = new JCheckBox("Documentos em ordem");
-        chkDocumentos.setSelected(veiculos.get(i).isDocumentos());
-        panel.add(chkDocumentos);
-
-        panel.add(new JLabel(""));
-
-        JCheckBox chkVOne = new JCheckBox("Bluetooth");
-        JCheckBox chkVTwo = new JCheckBox("Sistema de navegação");
-        panel.add(chkVOne);
-        panel.add(chkVTwo);
-
-        comboCategorias.addActionListener((ActionEvent e) -> {
-            switch (comboCategorias.getSelectedIndex()) {
-
-                case 0 -> {
-                    chkVOne.setText("Bluetooth");
-                    chkVTwo.setText("Sistema de navegação");
-                }
-
-                case 1 -> {
-                    chkVOne.setText("Sensores de estacionamento");
-                    chkVTwo.setText("Tração às 4 rodas");
-                }
-
-                case 2 -> {
-                    chkVOne.setText("WiFi");
-                    chkVTwo.setText("Assentos com massagem");
-                }
-
-                default -> {
-                    chkVOne.setText("Porta automática");
-                    chkVTwo.setText("Rampa para cadeira de rodas");
-                }
-
-            }
-        });
-
-        JButton confirmButton = new JButton("Editar");
-        JButton cancelButton = new JButton("Cancelar");
-
-        cancelButton.addActionListener(e -> {
+        if(veiculos.get(i).isAlugado()){
+            JOptionPane.showMessageDialog(new JFrame(), "Não é possível editar um veículo alugado!", "Erro",
+                    JOptionPane.ERROR_MESSAGE);
             Veiculos();
-            frame.dispose();
-        });
+        }else{
 
-        confirmButton.addActionListener(e -> {
+            JFrame frame = new JFrame("Editar veículo");
+            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            frame.setSize(600, 500);
+            frame.setResizable(false);
+            frame.setLayout(new BorderLayout());
+            frame.setLocationRelativeTo(null); // Centralizar o frame na tela
 
-            String marca = txtMarca.getText().trim().toUpperCase();
-            String modelo = txtModelo.getText().trim().toUpperCase();
-            String matricula = txtMatricula.getText().toUpperCase();
-            String anoS = txtAno.getText();
-            String portasS = txtPortas.getText();
-            String capacidadeS = txtCapacidade.getText();
-            String velocidadeS = txtVelocidade.getText();
-            String combustivel = txtCombustivel.getText().trim();
-            String precoS = txtPreco.getText();
-            boolean documentos = chkDocumentos.isSelected();
-            boolean chkOne = chkVOne.isSelected();
-            boolean chkTwo = chkVTwo.isSelected();
+            JPanel panel = new JPanel(new GridLayout(0, 2, 10, 10));
+            panel.setBorder(new EmptyBorder(10, 10, 10, 10)); // Espaçamento externo
 
-            if (marca.isEmpty() || modelo.isEmpty() || matricula.isEmpty() || anoS.isEmpty() || portasS.isEmpty() || capacidadeS.isEmpty() || velocidadeS.isEmpty() || combustivel.isEmpty() || precoS.isEmpty()) {
+            panel.add(new JLabel("Categoria:"));
+            String[] categorias = {"Económico", "XL", "Executivo", "Acessibilidade"};
+            JComboBox<String> comboCategorias = new JComboBox<>(categorias);
 
-                JOptionPane.showMessageDialog(new JFrame(), "Não podem existir campos vazios", "Erro",
-                        JOptionPane.ERROR_MESSAGE);
+            boolean flagchkOne = false;
+            boolean flagchkTwo = false;
+            JCheckBox chkVOne = new JCheckBox();
+            JCheckBox chkVTwo = new JCheckBox();
 
-            } else {
+            if(veiculos.get(i) instanceof CarroEconomico){
+                flagchkOne = ((CarroEconomico) veiculos.get(i)).isBluetooth();
+                flagchkTwo = ((CarroEconomico) veiculos.get(i)).isGps();
+                chkVOne.setText("Bluetooth");
+                chkVTwo.setText("Sistema de navegação");
+                comboCategorias.setSelectedIndex(0);
+            } else if (veiculos.get(i) instanceof CarroXL){
+                flagchkOne = ((CarroXL) veiculos.get(i)).isEstacionamento();
+                flagchkTwo = ((CarroXL) veiculos.get(i)).isTracao();
+                chkVOne.setText("Sensores de estacionamento");
+                chkVTwo.setText("Tração às 4 rodas");
+                comboCategorias.setSelectedIndex(1);
+            } else if (veiculos.get(i) instanceof CarroExecutivo){
+                flagchkOne = ((CarroExecutivo) veiculos.get(i)).isWifi();
+                flagchkTwo = ((CarroExecutivo) veiculos.get(i)).isMassagem();
+                chkVOne.setText("WiFi");
+                chkVTwo.setText("Assentos com massagem");
+                comboCategorias.setSelectedIndex(2);
+            } else if (veiculos.get(i) instanceof CarroAcessibilidade){
+                flagchkOne = ((CarroAcessibilidade) veiculos.get(i)).isAuto();
+                flagchkTwo = ((CarroAcessibilidade) veiculos.get(i)).isRampa();
+                chkVOne.setText("Porta automática");
+                chkVTwo.setText("Rampa para cadeira de rodas");
+                comboCategorias.setSelectedIndex(3);
+            }
+            chkVOne.setSelected(flagchkOne);
+            chkVTwo.setSelected(flagchkTwo);
+            panel.add(comboCategorias);
 
-                boolean flag = true;
-                if(!veiculos.get(i).getMatricula().equals(matricula)){
-                    flag = VerifMatricula(matricula);
-                }
+            panel.add(new JLabel("Marca:"));
+            JTextField txtMarca = new JTextField(veiculos.get(i).getMarca());
+            panel.add(txtMarca);
 
-                if(flag){
+            panel.add(new JLabel("Modelo:"));
+            JTextField txtModelo = new JTextField(veiculos.get(i).getModelo());
+            panel.add(txtModelo);
 
-                    String error = "Ano inválido";
+            panel.add(new JLabel("Matrícula:"));
+            JTextField txtMatricula = new JTextField(veiculos.get(i).getMatricula());
+            panel.add(txtMatricula);
 
-                    try {
+            panel.add(new JLabel("Ano:"));
+            JTextField txtAno = new JTextField(String.valueOf(veiculos.get(i).getAno()));
+            panel.add(txtAno);
 
-                        int ano = Integer.parseInt(anoS);
-                        if ((ano > Year.now().getValue()) || (Year.now().getValue() - ano) > 7) {
-                            Integer.parseInt("Error");
-                        }
+            panel.add(new JLabel("Portas:"));
+            JTextField txtPortas = new JTextField(String.valueOf(veiculos.get(i).getPortas()));
+            panel.add(txtPortas);
 
-                        error = "Número de portas inválido";
-                        int portas = Integer.parseInt(portasS);
-                        if (portas < 5 || portas > 10) {
-                            Integer.parseInt("Error");
-                        }
+            panel.add(new JLabel("Capacidade:"));
+            JTextField txtCapacidade = new JTextField(String.valueOf(veiculos.get(i).getCapacidade()));
+            panel.add(txtCapacidade);
 
-                        error = "Capacidade inválida";
-                        int capacidade = Integer.parseInt(capacidadeS);
-                        if (capacidade < 1 || capacidade > 9) {
-                            Integer.parseInt("Error");
-                        }
+            panel.add(new JLabel("Velocidade máxima (km/h):"));
+            JTextField txtVelocidade = new JTextField(String.valueOf(veiculos.get(i).getVelocidade()));
+            panel.add(txtVelocidade);
 
-                        error = "Velocidade inválida";
-                        double velocidade = Double.parseDouble(velocidadeS);
-                        if (velocidade < 50 || velocidade > 500) {
-                            Integer.parseInt("Error");
-                        }
+            panel.add(new JLabel("Combustível:"));
+            JComboBox<String> comboCombustivel = new JComboBox<>(new String[]{"Gasolina", "Diesel", "Elétrico", "Híbrido"});
+            if(veiculos.get(i).getCombustivel().equals("Gasolina")){
+                comboCombustivel.setSelectedIndex(0);
+            }else if(veiculos.get(i).getCombustivel().equals("Diesel")){
+                comboCombustivel.setSelectedIndex(1);
+            }else if(veiculos.get(i).getCombustivel().equals("Elétrico")){
+                comboCombustivel.setSelectedIndex(2);
+            }else{
+                comboCombustivel.setSelectedIndex(3);
+            }
+            panel.add(comboCombustivel);
 
-                        error = "Preço inválido";
-                        double preco = Double.parseDouble(precoS);
-                        if (preco < 0) {
-                            Integer.parseInt("Error");
-                        }
+            panel.add(new JLabel("Preço por dia (€):"));
+            JTextField txtPreco = new JTextField(String.valueOf(veiculos.get(i).getPreco()));
+            panel.add(txtPreco);
 
-                        int categoria = comboCategorias.getSelectedIndex();
+            JCheckBox chkDocumentos = new JCheckBox("Documentos em ordem");
+            chkDocumentos.setSelected(veiculos.get(i).isDocumentos());
+            panel.add(chkDocumentos);
 
-                        Veiculo c = null;
+            panel.add(new JLabel(""));
 
-                        c = switch (categoria) {
-                            case 0 -> new CarroEconomico(marca, modelo, matricula, ano, portas, capacidade, velocidade, combustivel, documentos, preco, false, chkOne, chkTwo);
-                            case 1 -> new CarroXL(marca, modelo, matricula, ano, portas, capacidade, velocidade, combustivel, documentos, preco, false, chkOne, chkTwo);
-                            case 2 -> new CarroExecutivo(marca, modelo, matricula, ano, portas, capacidade, velocidade, combustivel, documentos, preco, false, chkOne, chkTwo);
-                            default -> new CarroAcessibilidade(marca, modelo, matricula, ano, portas, capacidade, velocidade, combustivel, documentos, preco, false, chkOne, chkTwo);
-                        };
+            panel.add(chkVOne);
+            panel.add(chkVTwo);
 
-                        veiculos.set(i, c);
+            comboCategorias.addActionListener((ActionEvent e) -> {
+                switch (comboCategorias.getSelectedIndex()) {
 
-                        JOptionPane.showMessageDialog(new JFrame(), "Veículo editado com sucesso", "Sucesso",
-                                JOptionPane.INFORMATION_MESSAGE);
+                    case 0 -> {
+                        chkVOne.setText("Bluetooth");
+                        chkVTwo.setText("Sistema de navegação");
+                    }
 
-                        Veiculos();
-                        frame.dispose();
+                    case 1 -> {
+                        chkVOne.setText("Sensores de estacionamento");
+                        chkVTwo.setText("Tração às 4 rodas");
+                    }
 
-                    } catch (Exception ex) {
+                    case 2 -> {
+                        chkVOne.setText("WiFi");
+                        chkVTwo.setText("Assentos com massagem");
+                    }
 
-                        JOptionPane.showMessageDialog(new JFrame(), error, "Erro",
-                                JOptionPane.ERROR_MESSAGE);
+                    default -> {
+                        chkVOne.setText("Porta automática");
+                        chkVTwo.setText("Rampa para cadeira de rodas");
                     }
 
                 }
+            });
 
-            }
-        });
+            JButton confirmButton = new JButton("Editar");
+            JButton cancelButton = new JButton("Cancelar");
 
-        JPanel buttonPanel = new JPanel(new GridLayout(1, 2, 10, 10)); // 1 linha, 2 colunas
-        buttonPanel.setBorder(new EmptyBorder(10, 10, 10, 10)); // Espaçamento externo
-        buttonPanel.add(confirmButton);
-        buttonPanel.add(cancelButton);
+            cancelButton.addActionListener(e -> {
+                Veiculos();
+                frame.dispose();
+            });
 
-        frame.add(panel, BorderLayout.CENTER);
-        frame.add(buttonPanel, BorderLayout.SOUTH);
+            confirmButton.addActionListener(e -> {
 
-        frame.setVisible(true);
+                String marca = txtMarca.getText().trim().toUpperCase();
+                String modelo = txtModelo.getText().trim().toUpperCase();
+                String matricula = txtMatricula.getText().toUpperCase();
+                String anoS = txtAno.getText();
+                String portasS = txtPortas.getText();
+                String capacidadeS = txtCapacidade.getText();
+                String velocidadeS = txtVelocidade.getText();
+                String combustivel = comboCombustivel.getSelectedItem().toString();
+                String precoS = txtPreco.getText();
+                boolean documentos = chkDocumentos.isSelected();
+                boolean chkOne = chkVOne.isSelected();
+                boolean chkTwo = chkVTwo.isSelected();
+
+                if (marca.isEmpty() || modelo.isEmpty() || matricula.isEmpty() || anoS.isEmpty() || portasS.isEmpty() || capacidadeS.isEmpty() || velocidadeS.isEmpty() || precoS.isEmpty()) {
+
+                    JOptionPane.showMessageDialog(new JFrame(), "Não podem existir campos vazios!", "Erro",
+                            JOptionPane.ERROR_MESSAGE);
+
+                } else {
+
+                    boolean flag = true;
+                    if(!veiculos.get(i).getMatricula().equals(matricula)){
+                        flag = VerifMatricula(matricula);
+                    }
+
+                    if(flag){
+
+                        String error = "Ano inválido (veículo não pode ter mais de 7 anos)!";
+
+                        try {
+
+                            int ano = Integer.parseInt(anoS);
+                            if ((ano > Year.now().getValue()) || (Year.now().getValue() - ano) > 7) {
+                                Integer.parseInt("Error");
+                            }
+
+                            error = "Número de portas inválido (tem de ter entre 5 a 8 portas)!";
+                            int portas = Integer.parseInt(portasS);
+                            if (portas < 5 || portas > 10) {
+                                Integer.parseInt("Error");
+                            }
+
+                            error = "Capacidade inválida (tem de ser entre 2 a 9 lugares)!";
+                            int capacidade = Integer.parseInt(capacidadeS);
+                            if (capacidade < 1 || capacidade > 9) {
+                                Integer.parseInt("Error");
+                            }
+
+                            error = "Velocidade inválida (tem de ser entre 80 e 500 km/h)!";
+                            double velocidade = Double.parseDouble(velocidadeS);
+                            if (velocidade < 50 || velocidade > 500) {
+                                Integer.parseInt("Error");
+                            }
+
+                            error = "Preço inválido!";
+                            double preco = Double.parseDouble(precoS);
+                            if (preco < 0) {
+                                Integer.parseInt("Error");
+                            }
+
+                            int categoria = comboCategorias.getSelectedIndex();
+
+                            Veiculo c = null;
+
+                            c = switch (categoria) {
+                                case 0 -> new CarroEconomico(marca, modelo, matricula, ano, portas, capacidade, velocidade, combustivel, documentos, preco, false, chkOne, chkTwo);
+                                case 1 -> new CarroXL(marca, modelo, matricula, ano, portas, capacidade, velocidade, combustivel, documentos, preco, false, chkOne, chkTwo);
+                                case 2 -> new CarroExecutivo(marca, modelo, matricula, ano, portas, capacidade, velocidade, combustivel, documentos, preco, false, chkOne, chkTwo);
+                                default -> new CarroAcessibilidade(marca, modelo, matricula, ano, portas, capacidade, velocidade, combustivel, documentos, preco, false, chkOne, chkTwo);
+                            };
+
+                            veiculos.set(i, c);
+
+                            JOptionPane.showMessageDialog(new JFrame(), "Veículo editado com sucesso!", "Sucesso",
+                                    JOptionPane.INFORMATION_MESSAGE);
+
+                            Veiculos();
+                            frame.dispose();
+
+                        } catch (Exception ex) {
+
+                            JOptionPane.showMessageDialog(new JFrame(), error, "Erro",
+                                    JOptionPane.ERROR_MESSAGE);
+                        }
+
+                    }
+
+                }
+            });
+
+            JPanel buttonPanel = new JPanel(new GridLayout(1, 2, 10, 10)); // 1 linha, 2 colunas
+            buttonPanel.setBorder(new EmptyBorder(10, 10, 10, 10)); // Espaçamento externo
+            buttonPanel.add(confirmButton);
+            buttonPanel.add(cancelButton);
+
+            frame.add(panel, BorderLayout.CENTER);
+            frame.add(buttonPanel, BorderLayout.SOUTH);
+
+            frame.setVisible(true);
+
+        }
 
     }
 
     public static void VeiculoD(int i){
 
         if(veiculos.get(i).isAlugado()){
-            JOptionPane.showMessageDialog(new JFrame(), "Não é possível remover um veículo alugado", "Erro",
+            JOptionPane.showMessageDialog(new JFrame(), "Não é possível remover um veículo alugado!", "Erro",
                     JOptionPane.ERROR_MESSAGE);
             Veiculos();
         }else{
@@ -809,7 +841,7 @@ public class Main {
 
             if (reply == JOptionPane.YES_OPTION) {
                 veiculos.remove(i);
-                JOptionPane.showMessageDialog(new JFrame(), "Veículo removido com sucesso", "Sucesso",
+                JOptionPane.showMessageDialog(new JFrame(), "Veículo removido com sucesso!", "Sucesso",
                         JOptionPane.INFORMATION_MESSAGE);
                 Veiculos();
             }
@@ -837,7 +869,7 @@ public class Main {
         ArrayList<String> veiculosPositions = new ArrayList();
         DefaultListModel<String> listModel = new DefaultListModel<>();
         for(Veiculo v : veiculos){
-            if(!v.isAlugado()){
+            if(!v.isAlugado() && v.isDocumentos()){
                 listModel.addElement(v.toString());
                 veiculosPositions.add(v.getMatricula());
             }
@@ -856,7 +888,6 @@ public class Main {
 
         // Combobox para filtrar categorias
         String[] categorias = {"Todos", "Económico", "XL", "Executivo", "Acessibilidade"};
-        //buttonPanel.add(new JLabel("Categoria:"));
         JComboBox<String> comboCategorias = new JComboBox<>(categorias);
         comboCategorias.setSelectedIndex(0);
         buttonPanel.add(comboCategorias);
@@ -907,9 +938,14 @@ public class Main {
         button1.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                selectedVeiculo = getVeiculoIndex(veiculosPositions.get(vehicleList.getSelectedIndex()));
-                ClienteS();
-                frame.dispose();
+                if(vehicleList.getSelectedIndex() == -1) {
+                    JOptionPane.showMessageDialog(new JFrame(), "Nenhum veículo selecionado!", "Erro",
+                            JOptionPane.ERROR_MESSAGE);
+                }else {
+                    selectedVeiculo = getVeiculoIndex(veiculosPositions.get(vehicleList.getSelectedIndex()));
+                    ClienteS();
+                    frame.dispose();
+                }
             }
         });
 
@@ -928,7 +964,7 @@ public class Main {
                     JOptionPane.showMessageDialog(new JFrame(), "Nenhum veículo selecionado!", "Erro",
                             JOptionPane.ERROR_MESSAGE);
                 }else{
-                    VeiculoR(getVeiculoIndex(veiculosPositions.get(vehicleList.getSelectedIndex())));
+                    VeiculoR(veiculos.get(getVeiculoIndex(veiculosPositions.get(vehicleList.getSelectedIndex()))));
                 }
 
             }
@@ -951,6 +987,7 @@ public class Main {
         JFrame frame = new JFrame("Aluguer");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(600, 670);
+        frame.setResizable(false);
         frame.setLayout(new BorderLayout());
         frame.setLocationRelativeTo(null); // Centralizar o frame na tela
 
@@ -960,7 +997,7 @@ public class Main {
         titleLabel.setBorder(new EmptyBorder(10, 10, 0, 0)); // Espaçamento externo
         frame.add(titleLabel, BorderLayout.NORTH);
 
-        JPanel panel = new JPanel(new GridLayout(0, 1, 10, 10));
+        JPanel panel = new JPanel(new GridLayout(0, 2, 10, 10));
         panel.setBorder(new EmptyBorder(10, 10, 10, 10)); // Espaçamento externo
 
         panel.add(new JLabel("<html><B>Veículo: </B><br><br>" +
@@ -985,15 +1022,17 @@ public class Main {
 
         panel.add(clienteButton);
 
-        panel.add(new JLabel("Número do aluguer: " + (alugueis.size()+1)));
+        panel.add(new JLabel("Aluguer nº: " + (alugueis.size()+1)));
 
-        panel.add(new JLabel("Data de início do aluguer: " + LocalDate.now()));
+        panel.add(new JLabel("Data de início: " + LocalDate.now()));
+
+        panel.add(new JLabel("Preço por dia: " + veiculos.get(selectedVeiculo).getPreco() + "€"));
 
         JButton confirmButton = new JButton("Confirmar");
         JButton cancelButton = new JButton("Cancelar");
 
         veiculoButton.addActionListener(e -> {
-            VeiculoR(selectedVeiculo);
+            VeiculoR(veiculos.get(selectedVeiculo));
         });
 
         clienteButton.addActionListener(e -> {
@@ -1015,7 +1054,7 @@ public class Main {
             veiculos.get(selectedVeiculo).setAlugado(true);
             Aluguer a = new Aluguer((alugueis.size()+1), veiculos.get(selectedVeiculo), clientes.get(selectedCliente), LocalDate.now());
             alugueis.add(a);
-            JOptionPane.showMessageDialog(new JFrame(), "Aluguer realizado com sucesso", "Sucesso",
+            JOptionPane.showMessageDialog(new JFrame(), "Aluguer realizado com sucesso!", "Sucesso",
                     JOptionPane.INFORMATION_MESSAGE);
             Alugueis();
             frame.dispose();
@@ -1038,6 +1077,7 @@ public class Main {
         JFrame frame = new JFrame("Aluguer");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(600, 670);
+        frame.setResizable(false);
         frame.setLayout(new BorderLayout());
         frame.setLocationRelativeTo(null); // Centralizar o frame na tela
 
@@ -1047,7 +1087,7 @@ public class Main {
         titleLabel.setBorder(new EmptyBorder(10, 10, 0, 0)); // Espaçamento externo
         frame.add(titleLabel, BorderLayout.NORTH);
 
-        JPanel panel = new JPanel(new GridLayout(0, 1, 10, 10));
+        JPanel panel = new JPanel(new GridLayout(0, 2, 10, 10));
         panel.setBorder(new EmptyBorder(10, 10, 10, 10)); // Espaçamento externo
 
         panel.add(new JLabel("<html><B>Veículo: </B><br><br>" +
@@ -1072,24 +1112,27 @@ public class Main {
 
         panel.add(clienteButton);
 
-        panel.add(new JLabel("Número do aluguer: " + (alugueis.get(i).getNum())));
+        panel.add(new JLabel("Aluguer nº: " + (alugueis.get(i).getNum())));
+        panel.add(new JLabel("Data de início: " + alugueis.get(i).getInicio()));
 
-        panel.add(new JLabel("Data de início do aluguer: " + alugueis.get(i).getInicio()));
-
-        if(alugueis.get(i).isTermidado()){
-            panel.add(new JLabel("Data de término do aluguer: " + alugueis.get(i).getFim()));
-            panel.add(new JLabel("Valor total: " + alugueis.get(i).PrecoTotal() + "€"));
-        }
-
-        JButton confirmButton = new JButton("Terminar");
+        JButton confirmButton = new JButton();
         JButton cancelButton = new JButton("Voltar");
 
+        if(alugueis.get(i).isTermidado()){
+            confirmButton.setText("Recibo");
+            panel.add(new JLabel("Data de fim: " + alugueis.get(i).getFim()));
+            panel.add(new JLabel("Preço total: " + alugueis.get(i).PrecoTotal() + "€"));
+        }else{
+            panel.add(new JLabel("Preço por dia: " + alugueis.get(i).getV().getPreco() + "€"));
+            confirmButton.setText("Terminar");
+        }
+
         veiculoButton.addActionListener(e -> {
-            VeiculoR(selectedVeiculo);
+            VeiculoR(alugueis.get(i).getV());
         });
 
         clienteButton.addActionListener(e -> {
-            ClienteR(selectedCliente);
+            ClienteR(getClienteIndex(alugueis.get(i).getC().getNif()));
         });
 
         cancelButton.addActionListener(e -> {
@@ -1098,25 +1141,30 @@ public class Main {
         });
 
         confirmButton.addActionListener(e -> {
-            int reply = JOptionPane.showConfirmDialog(new JFrame(), "Deseja terminar este aluguer?", "Confirmação",
-                    JOptionPane.YES_NO_OPTION);
+            if(alugueis.get(i).isTermidado()){
+                JOptionPane.showMessageDialog(new JFrame(), alugueis.get(i).Recibo(), "Recibo do aluguer",
+                        JOptionPane.INFORMATION_MESSAGE);
+            }else{
+                int reply = JOptionPane.showConfirmDialog(new JFrame(), "Deseja terminar este aluguer?", "Confirmação",
+                        JOptionPane.YES_NO_OPTION);
 
-            if (reply == JOptionPane.YES_OPTION) {
-                alugueis.get(i).setTermidado(true);
-                veiculos.get(getVeiculoIndex(alugueis.get(i).getV().getMatricula())).setAlugado(false);
-                // Recibo e terminado com sucesso!
-                Alugueis();
-                frame.dispose();
+                if (reply == JOptionPane.YES_OPTION) {
+                    alugueis.get(i).setFim(LocalDate.now());
+                    alugueis.get(i).setTermidado(true);
+                    veiculos.get(getVeiculoIndex(alugueis.get(i).getV().getMatricula())).setAlugado(false);
+                    frame.dispose();
+                    JOptionPane.showMessageDialog(new JFrame(), alugueis.get(i).Recibo(), "Recibo do aluguer",
+                            JOptionPane.INFORMATION_MESSAGE);
+                    Alugueis();
+                }
             }
+
         });
 
         JPanel buttonPanel = new JPanel(new GridLayout(1, 2, 10, 10)); // 1 linha, 2 colunas
         buttonPanel.setBorder(new EmptyBorder(10, 10, 10, 10)); // Espaçamento externo
-        if(!alugueis.get(i).isTermidado()){
-            buttonPanel.add(confirmButton);
-        }else{
-            buttonPanel.add(new JLabel(""));
-        }
+
+        buttonPanel.add(confirmButton);
         buttonPanel.add(cancelButton);
 
         frame.add(panel, BorderLayout.CENTER);
@@ -1178,7 +1226,7 @@ public class Main {
 
         confirmButton.addActionListener(e -> {
 
-            String nome = txtNome.getText().trim();
+            String nome = txtNome.getText().trim().toUpperCase();
             LocalDate dateNasc = dataNasc.getDate();
             String nif = txtNIF.getText().trim();
             String email = txtEmail.getText().trim();
@@ -1188,12 +1236,12 @@ public class Main {
 
             if (nome.isEmpty() || dateNasc == null || nif.isEmpty() || email.isEmpty() || telemovel.isEmpty() || carta.isEmpty() || dateCarta == null) {
 
-                JOptionPane.showMessageDialog(new JFrame(), "Não podem existir campos vazios", "Erro",
+                JOptionPane.showMessageDialog(new JFrame(), "Não podem existir campos vazios!", "Erro",
                         JOptionPane.ERROR_MESSAGE);
 
             } else {
 
-                String error = "Data de nascimento inválida";
+                String error = "Data de nascimento inválida (tem de ter no mínimo 18 anos)!";
 
                 try {
 
@@ -1202,31 +1250,35 @@ public class Main {
                         Integer.parseInt("Error");
                     }
 
-                    error = "NIF inválido";
+                    error = "NIF inválido!";
 
-                    if (!validaNif(nif)) {
+                    int validarNif = validaNif(nif);
+                    if(validarNif == 0) {
+                        Integer.parseInt("Error");
+                    }else if(validarNif == 1){
+                        error = "NIF já existe!";
                         Integer.parseInt("Error");
                     }
 
-                    error = "Email inválido";
+                    error = "Email inválido!";
 
                     if (!validaEmail(email)) {
                         Integer.parseInt("Error");
                     }
 
-                    error = "Telemóvel inválido";
+                    error = "Telemóvel inválido!";
 
                     if (!validaTele(telemovel)) {
                         Integer.parseInt("Error");
                     }
 
-                    error = "Carta já existente noutro cliente";
+                    error = "Carta já existente noutro cliente!";
 
                     if (!validaCarta(carta)) {
                         Integer.parseInt("Error");
                     }
 
-                    error = "Validade da carta de condução inválida";
+                    error = "Validade da carta de condução inválida!";
 
                     if ((!dateCarta.isAfter(LocalDate.now()))) {
                         Integer.parseInt("Error");
@@ -1236,7 +1288,7 @@ public class Main {
 
                     clientes.add(c);
 
-                    JOptionPane.showMessageDialog(new JFrame(), "Cliente registado com sucesso", "Sucesso",
+                    JOptionPane.showMessageDialog(new JFrame(), "Cliente registado com sucesso!", "Sucesso",
                             JOptionPane.INFORMATION_MESSAGE);
 
                     int reply = JOptionPane.showConfirmDialog(new JFrame(), "Deseja selecionar este cliente?", "Sucesso",
@@ -1312,13 +1364,67 @@ public class Main {
 
         // Botões à direita
         JPanel buttonPanel = new JPanel();
-        buttonPanel.setLayout(new GridLayout(4, 1, 0, 10));
+        buttonPanel.setLayout(new GridLayout(6, 1, 0, 10));
         buttonPanel.setBorder(new EmptyBorder(10, 10, 10, 10)); // Espaçamento externo
+
+        JButton pesquisar = new JButton("Pesquisa por NIF");
+
+        pesquisar.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+                String nif = JOptionPane.showInputDialog("Insira o NIF do cliente");
+                if(nif != null){
+                    try{
+                        boolean flag = false;
+                        int sNIF = Integer.parseInt(nif);
+
+                        for(Cliente c : clientes){
+                            if(c.getNif() == sNIF){
+                                flag = true;
+                                int reply = JOptionPane.showConfirmDialog(new JFrame(), "Cliente encontrado! Deseja selecionar o cliente "+c.getNome()+"?", "Confirmação",
+                                        JOptionPane.YES_NO_OPTION);
+                                if(reply == JOptionPane.YES_OPTION){
+                                    selectedCliente = getClienteIndex(c.getNif());
+                                    AluguerC();
+                                    frame.dispose();
+                                }
+                                break;
+                            }
+                        }
+
+                        if(!flag){
+                            JOptionPane.showMessageDialog(new JFrame(), "Cliente não encontrado!", "Erro",
+                                    JOptionPane.ERROR_MESSAGE);
+                        }
+
+                    }catch (Exception ex){
+                        JOptionPane.showMessageDialog(new JFrame(), "NIF inválido!", "Erro",
+                                JOptionPane.ERROR_MESSAGE);
+                    }
+                }
+
+            }
+        });
 
         JButton button1 = new JButton("Selecionar");
         JButton button4 = new JButton("Detalhes");
         JButton button2 = new JButton("Novo");
         JButton button3 = new JButton("Voltar");
+        JButton button5 = new JButton("Editar");
+
+        button5.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if(clientesList.getSelectedIndex() == -1){
+                    JOptionPane.showMessageDialog(new JFrame(), "Nenhum cliente selecionado!", "Erro",
+                            JOptionPane.ERROR_MESSAGE);
+                }else{
+                    ClienteU(clientesList.getSelectedIndex());
+                    frame.dispose();
+                }
+            }
+        });
 
         button1.addActionListener(new ActionListener() {
             @Override
@@ -1363,9 +1469,11 @@ public class Main {
             }
         });
 
+        buttonPanel.add(pesquisar);
         buttonPanel.add(button2);
         buttonPanel.add(button1);
         buttonPanel.add(button4);
+        buttonPanel.add(button5);
         buttonPanel.add(button3);
 
         frame.add(buttonPanel, BorderLayout.EAST);
@@ -1373,6 +1481,156 @@ public class Main {
         frame.setVisible(true);
 
     }
+
+    public static void ClienteU(int i) {
+
+        JFrame frame = new JFrame("Editar cliente");
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setSize(600, 500);
+        frame.setResizable(false);
+        frame.setLayout(new BorderLayout());
+        frame.setLocationRelativeTo(null); // Centralizar o frame na tela
+
+        JPanel panel = new JPanel(new GridLayout(0, 2, 10, 10));
+        panel.setBorder(new EmptyBorder(10, 10, 10, 10)); // Espaçamento externo
+
+        panel.add(new JLabel("Nome completo:"));
+        JTextField txtNome = new JTextField(clientes.get(i).getNome());
+        panel.add(txtNome);
+
+        panel.add(new JLabel("Data de nascimento:"));
+        DatePicker dataNasc = new DatePicker();
+        dataNasc.setDate(clientes.get(i).getData());
+        panel.add(dataNasc);
+
+        panel.add(new JLabel("NIF:"));
+        JTextField txtNIF = new JTextField(String.valueOf(clientes.get(i).getNif()));
+        panel.add(txtNIF);
+
+        panel.add(new JLabel("Email:"));
+        JTextField txtEmail = new JTextField(clientes.get(i).getEmail());
+        panel.add(txtEmail);
+
+        panel.add(new JLabel("Telemóvel:"));
+        JTextField txtTelemovel = new JTextField(String.valueOf(clientes.get(i).getTelemovel()));
+        panel.add(txtTelemovel);
+
+        panel.add(new JLabel("Número da carta de condução:"));
+        JTextField txtCarta = new JTextField(clientes.get(i).getCarta().getNumero());
+        panel.add(txtCarta);
+
+        panel.add(new JLabel("Validade da carta de condução:"));
+        DatePicker dataCarta = new DatePicker();
+        dataCarta.setDate(clientes.get(i).getCarta().getValidade());
+        panel.add(dataCarta);
+
+        JButton confirmButton = new JButton("Editar");
+        JButton cancelButton = new JButton("Cancelar");
+
+        cancelButton.addActionListener(e -> {
+            ClienteS();
+            frame.dispose();
+        });
+
+        confirmButton.addActionListener(e -> {
+
+            String nome = txtNome.getText().trim().toUpperCase();
+            LocalDate dateNasc = dataNasc.getDate();
+            String nif = txtNIF.getText().trim();
+            String email = txtEmail.getText().trim();
+            String telemovel = txtTelemovel.getText().trim();
+            String carta = txtCarta.getText().trim().toUpperCase();
+            LocalDate dateCarta = dataCarta.getDate();
+
+
+            if (nome.isEmpty() || dateNasc == null || nif.isEmpty() || email.isEmpty() || telemovel.isEmpty() || carta.isEmpty() || dateCarta == null) {
+
+                JOptionPane.showMessageDialog(new JFrame(), "Não podem existir campos vazios!", "Erro",
+                        JOptionPane.ERROR_MESSAGE);
+
+            } else {
+
+                String error = "Data de nascimento inválida (tem de ter no mínimo 18 anos)!";
+
+                try {
+
+                    Period period = Period.between(dateNasc, LocalDate.now());
+                    if (!(period.getYears() >= 18 && period.getYears() <= 67)) {
+                        Integer.parseInt("Error");
+                    }
+
+                    error = "NIF inválido!";
+
+                    if(clientes.get(i).getNif() != Integer.parseInt(nif)){
+
+                        int validarNif = validaNif(nif);
+                        if(validarNif == 0) {
+                            Integer.parseInt("Error");
+                        }else if(validarNif == 1){
+                            error = "NIF já existe!";
+                            Integer.parseInt("Error");
+                        }
+
+                    }
+
+                    error = "Email inválido!";
+
+                    if (!validaEmail(email)) {
+                        Integer.parseInt("Error");
+                    }
+
+                    error = "Telemóvel inválido!";
+
+                    if (!validaTele(telemovel)) {
+                        Integer.parseInt("Error");
+                    }
+
+                    error = "Carta já existente noutro cliente!";
+
+                    if(!(clientes.get(i).getCarta().getNumero().equals(carta))) {
+                        if (!validaCarta(carta)) {
+                            Integer.parseInt("Error");
+                        }
+                    }
+
+                    error = "Validade da carta de condução inválida!";
+
+                    if ((!dateCarta.isAfter(LocalDate.now()))) {
+                        Integer.parseInt("Error");
+                    }
+
+                    Cliente c = new Cliente(nome, dateNasc, Integer.parseInt(nif), email, Integer.parseInt(telemovel), new CartaConducao(carta, dateCarta));
+
+                    clientes.set(i, c);
+
+                    JOptionPane.showMessageDialog(new JFrame(), "Cliente editado com sucesso!", "Sucesso",
+                            JOptionPane.INFORMATION_MESSAGE);
+
+                    ClienteS();
+                    frame.dispose();
+
+                } catch (Exception ex) {
+
+                    JOptionPane.showMessageDialog(new JFrame(), error, "Erro",
+                            JOptionPane.ERROR_MESSAGE);
+                }
+
+            }
+        });
+
+        JPanel buttonPanel = new JPanel(new GridLayout(1, 2, 10, 10)); // 1 linha, 2 colunas
+        buttonPanel.setBorder(new EmptyBorder(10, 10, 10, 10)); // Espaçamento externo
+        buttonPanel.add(confirmButton);
+        buttonPanel.add(cancelButton);
+
+        frame.add(panel, BorderLayout.CENTER);
+        frame.add(buttonPanel, BorderLayout.SOUTH);
+
+        frame.setVisible(true);
+
+    }
+
+    // Validações e métodos auxiliares
 
     public static boolean VerifMatricula(String m){
 
@@ -1415,7 +1673,9 @@ public class Main {
 
     }
 
-    public static boolean validaNif(String nif){
+    public static int validaNif(String nif){
+
+        // 0 - NIF inválido; 1 - NIF já existe; 2 - NIF válido
 
         /*
         As regras para a validação do NIF são:
@@ -1434,14 +1694,12 @@ public class Main {
 
             for(Cliente c : clientes){
                 if(c.getNif() == Integer.parseInt(nif)){
-                    JOptionPane.showMessageDialog(new JFrame(), "NIF já existe", "Erro",
-                            JOptionPane.ERROR_MESSAGE);
-                    return false;
+                    return 1;
                 }
             }
 
             final int max=9;
-            if (!nif.matches("[0-9]+") || nif.length()!=max) return false;
+            if (!nif.matches("[0-9]+") || nif.length()!=max) return 0;
             int checkSum=0;
             //calcula a soma de controlo
             for (int i=0; i<max-1; i++){
@@ -1449,9 +1707,11 @@ public class Main {
             }
             int checkDigit=11-(checkSum % 11);
             if (checkDigit>=10) checkDigit=0;
-            return checkDigit==nif.charAt(max-1)-'0';
+            boolean flag = checkDigit==nif.charAt(max-1)-'0';
+            if (!flag) return 0;
+            return 2;
         }catch (Exception e) {
-            return false;
+            return 0;
         }
         finally
         {
@@ -1481,6 +1741,15 @@ public class Main {
     public static int getVeiculoIndex(String matricula){
         for(int i = 0; i < veiculos.size(); i++){
             if(veiculos.get(i).getMatricula().equals(matricula)){
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    public static int getClienteIndex(int nif){
+        for(int i = 0; i < clientes.size(); i++){
+            if(clientes.get(i).getNif() == nif){
                 return i;
             }
         }

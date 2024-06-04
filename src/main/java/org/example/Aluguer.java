@@ -78,7 +78,7 @@ public class Aluguer implements Pagar{
         this.termidado = termidado;
     }
 
-    // Override methods
+    // Métodos 'Override'
 
     @Override
     public String toString() {
@@ -98,13 +98,26 @@ public class Aluguer implements Pagar{
     @Override
     public double PrecoTotal() {
 
-        long dias = DAYS.between(inicio, fim);
+        long dias = DAYS.between(inicio, fim) + 1;
         return dias * v.getPreco();
 
     }
 
     @Override
     public String Recibo() {
-        return "";
+
+        return "<html>" +
+                "<h1>Recibo</h1>" +
+                "<p><b>Aluguer nº:</b> " + num + "</p><br>" +
+                "<p><b>Veículo:</b> " + v.getMarca() + " " + v.getModelo() + " " + v.getAno() + "</p>" +
+                "<p><b>Matrícula:</b> " + v.getMatricula() + "</p><br>" +
+                "<p><b>Cliente:</b> " + c.getNome() + "</p>" +
+                "<p><b>NIF:</b> " + c.getNif() + "</p>" +
+                "<p><b>Telemóvel:</b> " + c.getTelemovel() + "</p><br>" +
+                "<p><b>Data de início:</b> " + inicio + "</p>" +
+                "<p><b>Data de fim:</b> " + fim + "</p><br>" +
+                "<h2><b>Preço total:</b> " + PrecoTotal() + "€</h2>" +
+                "</html>";
+
     }
 }

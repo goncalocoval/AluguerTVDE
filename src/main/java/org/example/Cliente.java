@@ -78,10 +78,11 @@ public class Cliente {
 
     // Métodos 'Override'
 
-
     @Override
     public String toString() {
-        return super.toString();
+
+        return nome + " | " + nif + " | " + email + " | " + telemovel;
+
     }
 
     @Override
@@ -93,8 +94,6 @@ public class Cliente {
     public boolean equals(Object obj) {
         return super.equals(obj);
     }
-
-    // Método 'print'
 
     // Método print()
 

@@ -39,11 +39,13 @@ public class CarroExecutivo extends Veiculo{
 
     @Override
     public String print() {
+        String wifiTxt = wifi ? "Sim" : "Não";
+        String massagemTxt = massagem ? "Sim" : "Não";
         return super.print() +
 
                 "<B>Categoria: </B> Carro executívo<br>" +
-                "<B>WiFi: </B>" + wifi + "<br>" +
-                "<B>Assentos com massagem: </B>"+ massagem + "<br>" +
+                "<B>WiFi: </B>" + wifiTxt + "<br>" +
+                "<B>Assentos com massagem: </B>"+ massagemTxt + "<br>" +
 
                 "</html>";
     }

@@ -39,11 +39,13 @@ public class CarroEconomico extends Veiculo{
 
     @Override
     public String print() {
+        String bluetoothTxt = this.bluetooth ? "Sim" : "Não";
+        String gpsTxt = this.gps ? "Sim" : "Não";
         return super.print() +
 
                 "<B>Categoria: </B> Carro económico<br>" +
-                "<B>Bluetooth: </B>" + bluetooth + "<br>" +
-                "<B>Sistema de navegação: </B>"+ gps + "<br>" +
+                "<B>Bluetooth: </B>" + bluetoothTxt + "<br>" +
+                "<B>Sistema de navegação: </B>"+ gpsTxt + "<br>" +
 
                 "</html>";
     }

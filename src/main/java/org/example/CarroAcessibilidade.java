@@ -39,12 +39,12 @@ public class CarroAcessibilidade extends Veiculo{
 
     @Override
     public String print() {
+        String autoTxt = auto ? "Sim" : "Não";
+        String rampaTxt = rampa ? "Sim" : "Não";
         return super.print() +
-
                 "<B>Categoria: </B> Carro acessibilidade<br>" +
-                "<B>Porta automática: </B>" + auto + "<br>" +
-                "<B>Rampa para cadeira de rodas: </B>"+ rampa + "<br>" +
-
+                "<B>Porta automática: </B>" + autoTxt + "<br>" +
+                "<B>Rampa para cadeira de rodas: </B>"+ rampaTxt + "<br>" +
                 "</html>";
     }
 

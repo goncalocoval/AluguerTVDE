@@ -156,19 +156,20 @@ public class Veiculo {
     // Método print()
 
     public String print(){
+        String documentosTxt = documentos ? "Sim":"Não";
+        String alugadoTxt = alugado ? "Sim":"Não";
         return "<html>" +
-
                 "<B>Marca: </B>" + marca + "<br>" +
                 "<B>Modelo: </B>"+ modelo + "<br>" +
                 "<B>Matrícula: </B>" + matricula + "<br>" +
                 "<B>Ano: </B>"+ ano + "<br>" +
                 "<B>Portas: </B>" + portas + "<br>" +
-                "<B>Capacidade: </B>"+ capacidade + "<br>" +
-                "<B>Velocidade máxima: </B>"+ velocidade + "<br>" +
+                "<B>Capacidade: </B>"+ capacidade + " lugares<br>" +
+                "<B>Velocidade máxima: </B>"+ velocidade + " km/h<br>" +
                 "<B>Combustível: </B>" + combustivel + "<br>" +
-                "<B>Documentos em ordem: </B>"+ documentos + "<br>" +
-                "<B>Preço por dia (€): </B>" + preco + "<br>" +
-                "<B>Alugado: </B>"+ alugado + "<br>";
+                "<B>Documentos em ordem: </B>"+ documentosTxt + "<br>" +
+                "<B>Preço por dia: </B>" + preco + "€<br>" +
+                "<B>Alugado: </B>"+ alugadoTxt + "<br>";
     }
 
 }

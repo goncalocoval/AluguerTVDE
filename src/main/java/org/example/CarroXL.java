@@ -39,11 +39,13 @@ public class CarroXL extends Veiculo{
 
     @Override
     public String print() {
+        String estacionamentoTxt = estacionamento ? "Sim" : "Não";
+        String tracaoTxt = tracao ? "Sim" : "Não";
         return super.print() +
 
                 "<B>Categoria: </B> Carro XL<br>" +
-                "<B>Sensores de estacionamento: </B>" + estacionamento + "<br>" +
-                "<B>Tração às 4 rodas: </B>"+ tracao + "<br>" +
+                "<B>Sensores de estacionamento: </B>" + estacionamentoTxt + "<br>" +
+                "<B>Tração às 4 rodas: </B>"+ tracaoTxt + "<br>" +
 
                 "</html>";
     }
