@@ -1763,7 +1763,38 @@ public class Main {
         return -1;
     }
 
+    public static void DefaultData(){
+
+        Veiculo v1 = new CarroEconomico("TOYOTA", "YARIS", "43-GO-65", 2017, 5, 5, 180.0, "Gasolina", true, 29.0, true, false, false);
+        Veiculo v2 = new CarroXL("DACIA", "DUSTER", "07-PS-92", 2019, 5, 7, 170.0, "Gasolina", true, 35.9, false, true, true);
+        Veiculo v3 = new CarroExecutivo("AUDI", "A6", "87-CV-23", 2018, 5, 5, 200.0, "Gasolina", true, 53.5, true, true, true);
+        Veiculo v4 = new CarroAcessibilidade("FIAT", "DOBLO", "DK-73-BT", 2021, 5, 9, 150.0, "Diesel", true, 19.0, false, true, true);
+        Veiculo v5 = new CarroEconomico("RENAULT", "CLIO", "46-LS-54", 2019, 5, 5, 190.0, "Gasolina", true, 25.0, false, true, false);
+        Veiculo v6 = new CarroExecutivo("BMW", "SÉRIE 5", "12-AB-34", 2017, 5, 5, 210.0, "Gasolina", true, 45.0, false, false, true);
+
+        veiculos.add(v1);
+        veiculos.add(v2);
+        veiculos.add(v3);
+        veiculos.add(v4);
+        veiculos.add(v5);
+        veiculos.add(v6);
+
+        Cliente c1 = new Cliente("SIMÃO COVAL", LocalDate.of(2002, 2, 12), 266205330, "covalsimao2002@gmail.com", 934644316, new CartaConducao("AV-12345678", LocalDate.of(2035, 5, 29)));
+        Cliente c2 = new Cliente("GONÇALO COVAL", LocalDate.of(2003, 1, 17), 266205712, "covalgoncalo2003@gmail.com", 930447754, new CartaConducao("AV-87654321", LocalDate.of(2036, 8, 12)));
+
+        clientes.add(c1);
+        clientes.add(c2);
+
+        Aluguer a1 = new Aluguer(1, v1, c2, LocalDate.of(2024, 6, 1));
+        Aluguer a2 = new Aluguer(2, v3, c1, LocalDate.of(2024, 6, 8));
+
+        alugueis.add(a1);
+        alugueis.add(a2);
+
+    }
+
     public static void main(String[] args) {
+        DefaultData(); // Carregamento de dados
         Inicio();
     }
 
